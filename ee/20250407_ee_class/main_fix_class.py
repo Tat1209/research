@@ -1,13 +1,13 @@
 import sys
-from pathlib import Path
 import math
+from pathlib import Path
 
 import torch
 from torchvision import transforms
 
-work_path = Path(next((p for p in Path(__file__).resolve().parents if p.name == "Research"), None))
-torchlib_path = str(work_path / Path("torch_libs"))
-sys.path.append(torchlib_path)
+work_path = Path(next((p for p in Path(__file__).resolve().parents if p.name == "research"), None))
+tools_path = str(work_path / Path("../torch-tools"))
+sys.path.append(tools_path)
 
 from datasets import Datasets
 from run_manager import RunManager, RunsManager

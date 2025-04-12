@@ -1,13 +1,13 @@
 import sys
-from pathlib import Path
 import math
+from pathlib import Path
 
 import torch
 from torchvision import transforms
 
-work_path = Path(next((p for p in Path(__file__).resolve().parents if p.name == "Research"), None))
-torchlib_path = str(work_path / Path("app/torch_libs"))
-sys.path.append(torchlib_path)
+work_path = Path(next((p for p in Path(__file__).resolve().parents if p.name == "research"), None))
+tools_path = str(work_path / Path("../torch-tools"))
+sys.path.append(tools_path)
 
 from datasets import Datasets
 from run_manager import RunManager, RunsManager
@@ -21,15 +21,17 @@ from models.resnet_git_ee import resnet50 as resnet50_git_ee
 
 ds = Datasets(root=work_path / "assets/datasets/")
 
-# exp_name = "exp_tmp"
-exp_name = "exp_fix_class"
+exp_name = "exp_tmp"
+# exp_name = "exp_fix_class"
 
 net = resnet18_git_ee
 
 base_epochs = 200
 base_ndata = 10000
-nclass_l = [2, 3, 4, 5, 7, 10]
-ndata_l = [10000, 7000, 5000, 3000, 2000, 1000, 500, 300] 
+nclass_l = [10]
+ndata_l = [500, 300] 
+# nclass_l = [2, 3, 4, 5, 7, 10]
+# ndata_l = [10000, 7000, 5000, 3000, 2000, 1000, 500, 300] 
 # data_pc_l = [int(base_ndata / nclass) for nclass in nclass_l] 
 
 max_lr = 0.005
