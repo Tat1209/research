@@ -2,7 +2,8 @@ __pycache__/
 
 /.venv/
 
+/torch_tools/
 /assets/datasets/
-mlruns/
+/mlruns/
 
 *.pt
