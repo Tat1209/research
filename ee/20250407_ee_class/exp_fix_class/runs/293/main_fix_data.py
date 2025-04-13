@@ -28,10 +28,10 @@ net = resnet18_git_ee
 
 base_epochs = 200
 base_ndata = 10000
-# nclass_l = [10]
-# ndata_l = [500, 300] 
-nclass_l = [2, 3, 4, 5, 7, 10]
-ndata_l = [10000, 7000, 5000, 3000, 2000, 1000, 500, 300] 
+nclass_l = [10]
+ndata_l = [500, 300] 
+# nclass_l = [2, 3, 4, 5, 7, 10]
+# ndata_l = [10000, 7000, 5000, 3000, 2000, 1000, 500, 300] 
 # data_pc_l = [int(base_ndata / nclass) for nclass in nclass_l] 
 
 max_lr = 0.005
