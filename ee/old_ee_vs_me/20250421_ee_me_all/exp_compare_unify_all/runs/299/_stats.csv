@@ -1,0 +1,2 @@
+model_arc,epochs,ensemble_type,params,grad,epoch,train_loss,train_acc,val_loss,val_acc,timestamp,timestamp_fmt,duration,duration_fmt,grad_mean
+models.resnet_git_ee_bn_def resnet18,100,EE,2855808,2855808,100,0.34126381282806395,0.8936,1.0618714616775513,0.6656,1745399723.6981664,2025/04/23 18:15:23,341.01929235458374,5.7m,0.0003233997558709234

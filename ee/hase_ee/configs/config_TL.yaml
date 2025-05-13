@@ -1,0 +1,5 @@
+optimizer: "SGD"
+max_lr: 0.01
+scheduler: "CosineAnnealingLR"
+batch_size: 32
+epochs: 50

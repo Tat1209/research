@@ -6,8 +6,8 @@ import torch
 from torchvision import transforms
 
 work_path = Path(next((p for p in Path(__file__).resolve().parents if p.name == "research"), None))
-tools_path = str(work_path / Path("../torch-tools"))
-sys.path.append(tools_path)
+tools_path = work_path / Path("../torch-tools")
+sys.path.append(str(tools_path))
 
 from datasets import Datasets
 from run_manager import RunManager, RunsManager
@@ -19,10 +19,10 @@ from models.resnet_ee import resnet18 as resnet18_ee
 from models.resnet_git_ee import resnet18 as resnet18_git_ee
 from models.resnet_git_ee import resnet50 as resnet50_git_ee
 
-ds = Datasets(root=work_path / "assets/datasets/")
+fetch_ds = Datasets(root=work_path / "assets/datasets/")
 
-# exp_name = "exp_tmp"
-exp_name = "exp_fix_class"
+exp_name = "exp_tmp"
+# exp_name = "exp_fix_class"
 
 net = resnet18_git_ee
 
@@ -30,7 +30,8 @@ base_epochs = 200
 base_ndata = 10000
 # nclass_l = [10]
 # ndata_l = [500, 300] 
-nclass_l = [2, 3, 4, 5, 7, 10]
+nclass_l = [4, 5, 7, 10]
+# nclass_l = [2, 3, 4, 5, 7, 10]
 ndata_l = [10000, 7000, 5000, 3000, 2000, 1000, 500, 300] 
 # data_pc_l = [int(base_ndata / nclass) for nclass in nclass_l] 
 
@@ -52,8 +53,8 @@ fil_ens_ll = [[(32, 1), (16, 4), (8, 16), (4, 64)]]
 src_text, src_name= utils.get_source(with_name=True)
 
 for train_ds_str, val_ds_str in zip(train_ds_str_l, val_ds_str_l):
-    base_train_ds = ds(train_ds_str)
-    base_val_ds = ds(val_ds_str)
+    base_train_ds = fetch_ds(train_ds_str)
+    base_val_ds = fetch_ds(val_ds_str)
     
     match train_ds_str:
         case "cifar10_train":
@@ -109,7 +110,7 @@ for train_ds_str, val_ds_str in zip(train_ds_str_l, val_ds_str_l):
                 fils_l, ensembles_l = map(list, zip(*fil_ens_l))
                 runs_mgr.log_param("fils", fils_l)
                 runs_mgr.log_param("ensembles", ensembles_l)
-                runs_mgr.log_text(src_text, src_name)
+                runs_mgr.log_text(src_name, src_text)
 
                 trainers = []
                 for fils, ensembles in fil_ens_l:
@@ -136,8 +137,8 @@ for train_ds_str, val_ds_str in zip(train_ds_str_l, val_ds_str_l):
                 }
 
                 runs_mgr.log_params(hp_dict)
-                runs_mgr.log_text(mtrainer.repr_network(), "model_layers.txt")
-                runs_mgr.log_text(mtrainer.arc_check(dl=train_dl), "model_structure.txt")
+                runs_mgr.log_text("model_repr.txt", mtrainer.repr_network())
+                runs_mgr.log_text("model_torchinfo.txt", mtrainer.torchinfo(dl=train_dl))
 
                 print(f"{fils=}, {ensembles=}, {len(train_ds)=}")
 
@@ -157,5 +158,5 @@ for train_ds_str, val_ds_str in zip(train_ds_str_l, val_ds_str_l):
                     runs_mgr.ref_results(step=e + 1, itv=epochs/100, last_step=epochs)
 
                 runs_mgr.log_torch_save(mtrainer.get_sd(), "state_dict.pt")
-                # runs_mgr.ref_results()
+
 

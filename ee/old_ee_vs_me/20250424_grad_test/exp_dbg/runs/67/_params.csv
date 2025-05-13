@@ -1,0 +1,2 @@
+model_arc,epochs,ensemble_type,params,grad
+models.resnet_git_ee resnet18,1,ME,2855808,2855808

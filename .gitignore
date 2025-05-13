@@ -6,3 +6,6 @@ __pycache__/
 /mlruns/
 
 *.pt
+*.jpg
+
+competition_images

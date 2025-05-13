@@ -114,7 +114,7 @@ for train_ds_str, val_ds_str in zip(train_ds_str_l, val_ds_str_l):
                 fils_l, ensembles_l = map(list, zip(*fil_ens_l))
                 runs_mgr.log_param("fils", fils_l)
                 runs_mgr.log_param("ensembles", ensembles_l)
-                runs_mgr.log_text(src_text, src_name)
+                runs_mgr.log_text(src_name, src_text)
 
                 trainers = []
                 for fils, ensembles in fil_ens_l:
@@ -141,8 +141,8 @@ for train_ds_str, val_ds_str in zip(train_ds_str_l, val_ds_str_l):
                 }
 
                 runs_mgr.log_params(hp_dict)
-                runs_mgr.log_text(mtrainer.repr_network(), "model_layers.txt")
-                runs_mgr.log_text(mtrainer.arc_check(dl=train_dl), "model_structure.txt")
+                runs_mgr.log_text("model_repr.txt", mtrainer.repr_network())
+                runs_mgr.log_text("model_torchinfo.txt", mtrainer.torchinfo(dl=train_dl))
 
                 print(f"{fils=}, {ensembles=}, {len(train_ds)=}")
 
