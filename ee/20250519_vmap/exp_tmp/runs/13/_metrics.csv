@@ -1,0 +1,2 @@
+step,epoch,lr,train_loss,train_acc,val_loss,val_acc,timestamp,timestamp_fmt,duration,duration_fmt
+1,1,0.1,4.605244200134277,0.0138,4.598838720703125,0.0151,1747648735.6353085,2025/05/19 18:58:55,17.67514181137085,17.7s

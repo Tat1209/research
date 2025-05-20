@@ -1,0 +1,1 @@
+<function Networks.__getattr__.<locals>.wrapper at 0x7fcaae9dbb00>
