@@ -3,6 +3,7 @@ import math
 from pathlib import Path
 
 import torch
+# from torchvision.transforms import v2 as transforms
 from torchvision import transforms
 
 this_path = Path(__file__) if '__file__' in globals() else Path("<unknown>.ipynb").resolve()
@@ -12,7 +13,7 @@ sys.path.append(str(tools_path))
 
 from datasets import Datasets
 from run_manager import RunManager, RunsManager
-from trainer import Network, Networks, Trainer, MultiTrainer, MergeEnsemble
+from trainer import Network, Networks, Trainer, MultiTrainer, MergeEnsemble, MergeEnsembleMeta
 from modules import CrossEntropyLossT
 import utils
 
@@ -28,7 +29,7 @@ fetch_ds = Datasets(root=work_path / "assets/datasets/")
 exp_name = "exp_tmp"
 
 net = resnet18_git_ee
-base_epochs = 3
+base_epochs = 4
 base_ndata = 5000
 max_lr = 0.1
 batch_size = 128
@@ -44,6 +45,7 @@ train_ds_str = "cifar100_train"
 val_ds_str = "cifar100_val"
 
 fils = 4
+# ensembles = 1
 ensembles = 64
 # fil_ens_l = [(32, 1), (4, 64)]
 # # fil_ens_l = [(32, 1), (16, 4), (8, 16), (4, 64)]
@@ -72,6 +74,8 @@ base_val_ds = base_val_ds.transform(val_trans)
 train_ds = base_train_ds.balance_label(seed=0).in_ndata(ndata)
 val_ds = base_val_ds
 
+# for ee_bool in [False]:
+# for ee_bool in [True]:
 for ee_bool in [True, False]:
     run_mgr = RunManager(exc_path=__file__, exp_name=exp_name)
 # runs_mgr = RunsManager([RunManager(exc_path=__file__, exp_name=exp_name) for _ in fil_ens_l])
@@ -107,36 +111,38 @@ for ee_bool in [True, False]:
     if ee_bool:
         network = Network(net(num_classes=num_classes, nb_fils=fils, ee_groups=ensembles))
         criterion = torch.nn.CrossEntropyLoss()
-        optimizer = torch.optim.SGD(network.parameters(), lr=max_lr, momentum=0.9, weight_decay=5e-4, nesterov=True)
-# optimizer = torch.optim.Adam(network.parameters(), lr=max_lr)
+        # optimizer = torch.optim.SGD(network.parameters(), lr=max_lr, momentum=0.9, weight_decay=5e-4, nesterov=True)
+        optimizer = torch.optim.Adam(network.parameters(), lr=0.005)
+        # optimizer = torch.optim.Adam(network.parameters(), lr=max_lr)
         scheduler_t = (torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0, last_epoch=-1), "epoch")
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         trainer = Trainer(network, criterion, optimizer, scheduler_t, device)
         
     else:
-        network = Networks(merge_stat=True)
+        network = Networks()
         for _ in range(ensembles):
             network_mem = Network(net(num_classes=num_classes, nb_fils=fils))
             network.append(network_mem)
         criterion = torch.nn.CrossEntropyLoss()
         optimizer = torch.optim.SGD(network.parameters(), lr=max_lr, momentum=0.9, weight_decay=5e-4, nesterov=True)
 # optimizer = torch.optim.Adam(network.parameters(), lr=max_lr)
-        scheduler_t = (torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0, last_epoch=-1), "epoch")
+        # scheduler_t = (torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0, last_epoch=-1), "epoch")
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-        trainer = MergeEnsemble(network, criterion, optimizer, scheduler_t, device)
+        trainer = MergeEnsembleMeta(network, criterion, optimizer, device=device)
+        # trainer = MergeEnsemble(network, criterion, optimizer, scheduler_t, device)
         
     hp_dict = {
-        "params": network.count_params(),
+        "params": network.count_params(agg_f=sum),
         "criterion": trainer.repr_criterion(),
         "optimizer": trainer.repr_optimizer(),
         "scheduler": trainer.repr_scheduler(),
     }
 
     run_mgr.log_params(hp_dict)
-    run_mgr.log_text("model_repr.txt", network.repr_network())
-    run_mgr.log_text("model_torchinfo.txt", network.torchinfo(dl=train_dl))
+    run_mgr.log_text("model_repr.txt", network.repr_network(agg_f= lambda x: x[0]))
+    # run_mgr.log_text("model_torchinfo.txt", network.torchinfo(dl=train_dl, agg_f= lambda x: x[0]))
 
-    print(f"{len(train_ds)=}")
+    # print(f"{len(train_ds)=}")
 
     for e in range(epochs):
         lrs = trainer.get_lr()
