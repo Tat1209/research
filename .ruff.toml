@@ -24,17 +24,19 @@ exclude = [
 ]
 
 # Same as Black.
-line-length = 88
+line-length = 100
+# line-length = 88
 indent-width = 4
 
 target-version = "py311"
 
 [lint]
 select = ["E4", "E7", "E9", "F"]
-ignore = ["E402", "F401", "F821"]
+ignore = ["E402", "F401", "F821", "F841"]
 # E402: Checks for imports that are not at the top of the file.
 # F401: Checks for unused imports.
 # F821: Undefined name. pylanceと競合
+# F841: Checks for unused variables.
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
