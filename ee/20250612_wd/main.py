@@ -51,7 +51,7 @@ train_ds_str = "cifar100_train"
 val_ds_str = "cifar100_val"
 
 # fil_ens_l = [(32, 1), (4, 64)]
-fil_ens_l = [(64, 1), (16, 16), (4, 256)]
+fil_ens_l = [(64, 1), (16, 16), (4, 256)] # base = 64
 # fil_ens_l = [(32, 1), (16, 4), (8, 16), (4, 64)]
 fils_l, ensembles_l = map(list, zip(*fil_ens_l))
 base_fils_l = [round(a * b ** (1/2)) for a, b in fil_ens_l]
@@ -75,96 +75,98 @@ match train_ds_str:
 base_train_ds = base_train_ds.transform(train_trans)
 base_val_ds = base_val_ds.transform(val_trans)
 
-for ndata in ndata_l:
-    for wd in wd_l:
-        # if not utils.is_reached((ndata, 300), (wd, 3e-8)):
-        #     continue
+for optim in ["sgd", "adam"]:
+    for ndata in ndata_l:
+        for wd in wd_l:
+            # if not utils.is_reached((ndata, 300), (wd, 3e-8)):
+            #     continue
 
-        train_ds = base_train_ds.balance_label(seed=0).in_ndata(ndata)
-        val_ds = base_val_ds
+            train_ds = base_train_ds.balance_label(seed=0).in_ndata(ndata)
+            val_ds = base_val_ds
 
-        runs_mgr = RunsManager([RunManager(exec_path=__file__, exp_name=exp_name, exp_tpl="exp_tpl_ee") for _ in fil_ens_l])
-        runs_mgr.log_param("model_arc", f"{net.__module__} {net.__name__}")
+            runs_mgr = RunsManager([RunManager(exec_path=__file__, exp_name=exp_name, exp_tpl="exp_tpl_ee") for _ in fil_ens_l])
+            runs_mgr.log_param("model_arc", f"{net.__module__} {net.__name__}")
 
-        runs_mgr.log_param("train_dataset", train_ds.state["dataset_id"])
-        runs_mgr.log_param("val_dataset", val_ds.state["dataset_id"])
-        runs_mgr.log_param("num_classes", num_classes := train_ds.fetch_classes())
+            runs_mgr.log_param("train_dataset", train_ds.state["dataset_id"])
+            runs_mgr.log_param("val_dataset", val_ds.state["dataset_id"])
+            runs_mgr.log_param("num_classes", num_classes := train_ds.fetch_classes())
 
-        runs_mgr.log_param("train_trans", repr(train_trans))
-        runs_mgr.log_param("val_trans", repr(val_trans))
+            runs_mgr.log_param("train_trans", repr(train_trans))
+            runs_mgr.log_param("val_trans", repr(val_trans))
 
-        runs_mgr.log_param("train_ndata", len(train_ds))
-        runs_mgr.log_param("val_ndata", len(val_ds))
+            runs_mgr.log_param("train_ndata", len(train_ds))
+            runs_mgr.log_param("val_ndata", len(val_ds))
 
-        runs_mgr.log_param("epochs", epochs := int(base_epochs * base_ndata / ndata + 1e-7))
-        runs_mgr.log_param("max_lr", max_lr)
-        runs_mgr.log_param("wd", wd)
-        runs_mgr.log_param("batch_size", batch_size)
+            runs_mgr.log_param("epochs", epochs := int(base_epochs * base_ndata / ndata + 1e-7))
+            runs_mgr.log_param("max_lr", max_lr)
+            runs_mgr.log_param("wd", wd)
+            runs_mgr.log_param("batch_size", batch_size)
 
-        train_dl = train_ds.loader(batch_size, shuffle=True)
-        val_dl = val_ds.loader(batch_size, shuffle=True)
+            train_dl = train_ds.loader(batch_size, shuffle=True)
+            val_dl = val_ds.loader(batch_size, shuffle=True)
 
-        runs_mgr.log_param("iters/epoch", len(train_dl))
-        runs_mgr.log_param("iters", len(train_dl) * epochs)
-        runs_mgr.log_param("target_steps", base_ndata * base_epochs)
-        runs_mgr.log_param("ndata_per_class", ndata / num_classes)
-        runs_mgr.log_param("fils", fils_l)
-        runs_mgr.log_param("ensembles", ensembles_l)
-        runs_mgr.log_param("base_fils", base_fils_l)
-        runs_mgr.log_text(src_name, src_text)
+            runs_mgr.log_param("iters/epoch", len(train_dl))
+            runs_mgr.log_param("iters", len(train_dl) * epochs)
+            runs_mgr.log_param("target_steps", base_ndata * base_epochs)
+            runs_mgr.log_param("ndata_per_class", ndata / num_classes)
+            runs_mgr.log_param("fils", fils_l)
+            runs_mgr.log_param("ensembles", ensembles_l)
+            runs_mgr.log_param("base_fils", base_fils_l)
+            runs_mgr.log_text(src_name, src_text)
 
-        trainers = []
-        for fils, ensembles in fil_ens_l:
-            network = Network(net(num_classes=num_classes, nb_fils=fils, ee_groups=ensembles, merge_mode="both"))
-            criterion = torch.nn.CrossEntropyLoss()
-            optimizer = torch.optim.SGD(network.parameters(), lr=max_lr, momentum=0.9, weight_decay=wd, nesterov=True)
-            # optimizer = torch.optim.SGD(network.parameters(), lr=max_lr, momentum=0.9, weight_decay=5e-4, nesterov=True)
-            # optimizer = torch.optim.Adam(network.parameters(), lr=max_lr)
-            scheduler_t = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0, last_epoch=-1)
-            device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-            trainer = EETrainer(network, criterion, optimizer, scheduler_t, device)
-            trainers.append(trainer)
-            
-        mtrainer = MultiTrainer(trainers)
-            
-        hp_dict = {
-            "num_params": mtrainer.networks.param_stat(lambda p: p.numel()),
-            "criterion": mtrainer.fmt_criterion(),
-            "optimizer": mtrainer.fmt_optimizer(),
-            "scheduler": mtrainer.fmt_scheduler(),
-        }
-
-        runs_mgr.log_params(hp_dict)
-        runs_mgr.log_text("model_repr.txt", network.repr_network())
-        runs_mgr.log_text("model_torchinfo.txt", network.torchinfo(dl=train_dl))
-
-        for e in range(epochs):
-            lrs = mtrainer.get_lr()
-            train_loss, train_acc, train_path_loss, train_path_acc = mtrainer.train_1epoch(train_dl)
-
-            met_dict = {"epoch": e + 1, "train_loss": train_loss, "train_acc": train_acc}
-            met_dict |= {"train_path_loss": train_path_loss, "train_path_acc": train_path_acc}
-            if utils.interval(step=e + 1, itv=epochs/100, last_step=epochs):
-                val_loss, val_acc, val_path_loss, val_path_acc = mtrainer.val_1epoch(val_dl)
-                met_dict.update({"val_loss": val_loss, "val_acc": val_acc, "val_path_loss": val_path_loss, "val_path_acc": val_path_acc})
-            else:
-                met_dict.update({"val_loss": None, "val_acc": None, "val_path_loss": None, "val_path_acc": None})
-
-            paras_stats_dict = {
-                    "param_l2norm_layer": mtrainer.networks.param_stat_layer(stat_f=lambda p: p.norm(p=2).item()),
-                    "param_l2norm": mtrainer.networks.param_stat(stat_f=lambda p: p.norm(p=2).item()),
-                    "grad_l2norm_layer": mtrainer.networks.grad_stat_layer(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
-                    "grad_l2norm": mtrainer.networks.grad_stat(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
+            trainers = []
+            for fils, ensembles in fil_ens_l:
+                network = Network(net(num_classes=num_classes, nb_fils=fils, ee_groups=ensembles, merge_mode="both"))
+                criterion = torch.nn.CrossEntropyLoss()
+                if optim == "sgd":
+                    optimizer = torch.optim.SGD(network.parameters(), lr=max_lr, momentum=0.9, weight_decay=wd, nesterov=True)
+                elif optim == "adam":
+                    optimizer = torch.optim.AdamW(network.parameters(), lr=max_lr, weight_decay=wd)
+                scheduler_t = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0, last_epoch=-1)
+                device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+                trainer = EETrainer(network, criterion, optimizer, scheduler_t, device)
+                trainers.append(trainer)
+                
+            mtrainer = MultiTrainer(trainers)
+                
+            hp_dict = {
+                "num_params": mtrainer.networks.param_stat(lambda p: p.numel()),
+                "criterion": mtrainer.fmt_criterion(),
+                "optimizer": mtrainer.fmt_optimizer(),
+                "scheduler": mtrainer.fmt_scheduler(),
             }
 
-            runs_mgr.log_metrics(met_dict, step=e + 1)
-            runs_mgr.log_metrics(paras_stats_dict, step=e + 1)
-            # runs_mgr.log_metrics(mtrainer.time_info(), step=e + 1)
-            runs_mgr.log_metrics(mtrainer.time_stats(incl_fmt=False), step=e + 1)
-            runs_mgr.log_metrics(mtrainer.time_stats_mt(incl_fmt=False), step=e + 1)
+            runs_mgr.log_params(hp_dict)
+            runs_mgr.log_text("model_repr.txt", network.repr_network())
+            runs_mgr.log_text("model_torchinfo.txt", network.torchinfo(dl=train_dl))
 
-            mtrainer.printmet(met_dict, e + 1, epochs, itv=epochs / 5)
-            runs_mgr.ref_stats(step=e + 1, itv=epochs/100, last_step=epochs)
-            runs_mgr.ref_results(step=e + 1, itv=epochs/100, last_step=epochs)
+            for e in range(epochs):
+                lrs = mtrainer.get_lr()
+                train_loss, train_acc, train_path_loss, train_path_acc = mtrainer.train_1epoch(train_dl)
 
-        runs_mgr.log_torch_save(mtrainer.networks.get_sd(), "state_dict.pt")
+                met_dict = {"epoch": e + 1, "train_loss": train_loss, "train_acc": train_acc}
+                met_dict |= {"train_path_loss": train_path_loss, "train_path_acc": train_path_acc}
+                if utils.interval(step=e + 1, itv=epochs/100, last_step=epochs):
+                    val_loss, val_acc, val_path_loss, val_path_acc = mtrainer.val_1epoch(val_dl)
+                    met_dict.update({"val_loss": val_loss, "val_acc": val_acc, "val_path_loss": val_path_loss, "val_path_acc": val_path_acc})
+                else:
+                    met_dict.update({"val_loss": None, "val_acc": None, "val_path_loss": None, "val_path_acc": None})
+
+                paras_stats_dict = {
+                        "param_l2norm_layer": mtrainer.networks.param_stat_layer(stat_f=lambda p: p.norm(p=2).item()),
+                        "param_l2norm": mtrainer.networks.param_stat(stat_f=lambda p: p.norm(p=2).item()),
+                        "grad_l2norm_layer": mtrainer.networks.grad_stat_layer(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
+                        "grad_l2norm": mtrainer.networks.grad_stat(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
+                }
+
+                runs_mgr.log_metrics(met_dict, step=e + 1)
+                runs_mgr.log_metrics(paras_stats_dict, step=e + 1)
+                # runs_mgr.log_metrics(mtrainer.time_info(), step=e + 1)
+                runs_mgr.log_metrics(mtrainer.time_stats(incl_fmt=False), step=e + 1)
+                runs_mgr.log_metrics(mtrainer.time_stats_mt(incl_fmt=False), step=e + 1)
+
+                mtrainer.printmet(met_dict, e + 1, epochs, itv=epochs / 5)
+                runs_mgr.ref_stats(step=e + 1, itv=epochs/100, last_step=epochs)
+                runs_mgr.ref_results(step=e + 1, itv=epochs/100, last_step=epochs)
+
+            runs_mgr.log_torch_save(mtrainer.networks.get_sd(), "state_dict.pt")
