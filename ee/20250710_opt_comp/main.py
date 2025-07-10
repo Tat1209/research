@@ -26,8 +26,9 @@ src_text, src_name= utils.get_source(with_name=True)
 
 fetch_ds = DatasetFetcher(root=work_path / "assets/datasets/")
 
-exp_name = "exp_sgd_wd"
+# exp_name = "exp_sgd_wd"
 # exp_name = "exp_tmp"
+exp_name = "exp_conf"
 
 net = resnet18_git_ee
 
