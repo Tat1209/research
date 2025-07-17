@@ -173,3 +173,4 @@ for optim in ["sgd", "adam"]:
                 runs_mgr.ref_results(step=e + 1, itv=epochs/100, last_step=epochs)
 
             runs_mgr.log_torch_save(mtrainer.networks.get_sd(), "state_dict.pt")
+
