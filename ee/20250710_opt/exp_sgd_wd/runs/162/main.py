@@ -36,10 +36,8 @@ base_ndata = 10000
 ndata_l = [10000, 5000, 2000, 1000, 500]
 # wd_l = [5e-4, 1e-4, 3e-5, 1e-6, 3e-8, 0]
 # wd_l = [1e-3, 5e-4, 3e-4, 1e-4, 3e-5, 1e-5, 3e-6, 1e-6, 3e-7, 1e-7, 3e-8, 1e-8, 0]
-wd_l = [1e-2, 3e-3, 1e-3, 3e-4, 1e-4, 1e-5, 1e-6, 0]
-
-# max_lr = 0.1
-max_lrs = (0.1, 5e-3)
+wd_l = [1e-3, 1e-4, 1e-5, 3e-6, 1e-7, 0]
+max_lr = 0.1
 batch_size = 128
 
 # base_epochs = 2
@@ -53,9 +51,8 @@ train_ds_str = "cifar100_train"
 val_ds_str = "cifar100_val"
 
 # fil_ens_l = [(32, 1), (4, 64)]
-# fil_ens_l = [(32, 1), (16, 4), (8, 16), (4, 64)]
 fil_ens_l = [(64, 1), (16, 16), (4, 256)] # base = 64
-
+# fil_ens_l = [(32, 1), (16, 4), (8, 16), (4, 64)]
 fils_l, ensembles_l = map(list, zip(*fil_ens_l))
 base_fils_l = [round(a * b ** (1/2)) for a, b in fil_ens_l]
 
@@ -78,7 +75,7 @@ match train_ds_str:
 base_train_ds = base_train_ds.transform(train_trans)
 base_val_ds = base_val_ds.transform(val_trans)
 
-for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
+for optim in ["sgd", "adam"]:
     for ndata in ndata_l:
         for wd in wd_l:
             # if not utils.is_reached((ndata, 300), (wd, 3e-8)):
@@ -158,7 +155,6 @@ for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
                 paras_stats_dict = {
                         "param_l2norm_layer": mtrainer.networks.param_stat_layer(stat_f=lambda p: p.norm(p=2).item()),
                         "param_l2norm": mtrainer.networks.param_stat(stat_f=lambda p: p.norm(p=2).item()),
-                        # 勾配ノルムは，iterationごとの統計とらないと意味ない
                         "grad_l2norm_layer": mtrainer.networks.grad_stat_layer(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
                         "grad_l2norm": mtrainer.networks.grad_stat(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
                 }

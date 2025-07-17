@@ -45,8 +45,9 @@ batch_size = 128
 # base_epochs = 2
 # base_ndata = 5000
 # ndata_l = [5000]
-# max_lr = 0.1
-# wd_l = [5e-4]
+# # max_lr = 0.1
+# max_lrs = (0.1, 5e-3)
+# # wd_l = [1e-5]
 # batch_size = 128
 
 train_ds_str = "cifar100_train"
@@ -145,26 +146,18 @@ for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
 
             for e in range(epochs):
                 lrs = mtrainer.get_lr()
-                train_loss, train_acc, train_path_loss, train_path_acc = mtrainer.train_1epoch(train_dl)
 
+                train_loss, train_acc, aux_stats = mtrainer.train_1epoch(train_dl)
                 met_dict = {"epoch": e + 1, "train_loss": train_loss, "train_acc": train_acc}
-                met_dict |= {"train_path_loss": train_path_loss, "train_path_acc": train_path_acc}
+
                 if utils.interval(step=e + 1, itv=epochs/100, last_step=epochs):
-                    val_loss, val_acc, val_path_loss, val_path_acc = mtrainer.val_1epoch(val_dl)
-                    met_dict.update({"val_loss": val_loss, "val_acc": val_acc, "val_path_loss": val_path_loss, "val_path_acc": val_path_acc})
+                    val_loss, val_acc = mtrainer.val_1epoch(val_dl)
+                    met_dict.update({"val_loss": val_loss, "val_acc": val_acc})
                 else:
-                    met_dict.update({"val_loss": None, "val_acc": None, "val_path_loss": None, "val_path_acc": None})
-
-                paras_stats_dict = {
-                        "param_l2norm_layer": mtrainer.networks.param_stat_layer(stat_f=lambda p: p.norm(p=2).item()),
-                        "param_l2norm": mtrainer.networks.param_stat(stat_f=lambda p: p.norm(p=2).item()),
-                        # 勾配ノルムは，iterationごとの統計とらないと意味ない
-                        "grad_l2norm_layer": mtrainer.networks.grad_stat_layer(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
-                        "grad_l2norm": mtrainer.networks.grad_stat(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
-                }
-
+                    met_dict.update({"val_loss": None, "val_acc": None})
+                    
                 runs_mgr.log_metrics(met_dict, step=e + 1)
-                runs_mgr.log_metrics(paras_stats_dict, step=e + 1)
+                runs_mgr.log_metrics(aux_stats, step=e + 1)
                 # runs_mgr.log_metrics(mtrainer.time_info(), step=e + 1)
                 runs_mgr.log_metrics(mtrainer.time_stats(incl_fmt=False), step=e + 1)
                 runs_mgr.log_metrics(mtrainer.time_stats_mt(incl_fmt=False), step=e + 1)
