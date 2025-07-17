@@ -155,6 +155,7 @@ for optim in ["sgd", "adam"]:
                 paras_stats_dict = {
                         "param_l2norm_layer": mtrainer.networks.param_stat_layer(stat_f=lambda p: p.norm(p=2).item()),
                         "param_l2norm": mtrainer.networks.param_stat(stat_f=lambda p: p.norm(p=2).item()),
+                        # 勾配ノルムは，iterationごとの統計とらないと意味ない
                         "grad_l2norm_layer": mtrainer.networks.grad_stat_layer(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
                         "grad_l2norm": mtrainer.networks.grad_stat(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None),
                 }
