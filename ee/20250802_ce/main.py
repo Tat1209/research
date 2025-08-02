@@ -83,12 +83,15 @@ base_val_ds = base_val_ds.transform(val_trans)
 
 for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
     for ndata in ndata_l:
+        train_ds = base_train_ds.balance_label(seed=0).in_ndata(ndata)
+        val_ds = base_val_ds
+
+        train_dl = train_ds.loader(batch_size, shuffle=True)
+        val_dl = val_ds.loader(batch_size, shuffle=False)
+
         for wd in wd_l:
             # if not utils.is_reached((optim, "adam")):
                 # continue
-
-            train_ds = base_train_ds.balance_label(seed=0).in_ndata(ndata)
-            val_ds = base_val_ds
 
             runs_mgr = RunsManager([RunManager(exec_path=__file__, exp_name=exp_name, exp_tpl="exp_tpl_ee") for _ in fil_ens_l])
             runs_mgr.log_param("model_arc", f"{net.__module__} {net.__name__}")
@@ -107,9 +110,6 @@ for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
             runs_mgr.log_param("max_lr", max_lr)
             runs_mgr.log_param("wd", wd)
             runs_mgr.log_param("batch_size", batch_size)
-
-            train_dl = train_ds.loader(batch_size, shuffle=True)
-            val_dl = val_ds.loader(batch_size, shuffle=True)
 
             runs_mgr.log_param("iters/epoch", len(train_dl))
             runs_mgr.log_param("iters", len(train_dl) * epochs)
