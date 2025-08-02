@@ -36,7 +36,7 @@ base_ndata = 10000
 ndata_l = [10000, 5000, 2000, 1000, 500]
 # wd_l = [5e-4, 1e-4, 3e-5, 1e-6, 3e-8, 0]
 # wd_l = [1e-3, 5e-4, 3e-4, 1e-4, 3e-5, 1e-5, 3e-6, 1e-6, 3e-7, 1e-7, 3e-8, 1e-8, 0]
-wd_l = [3e-3, 1e-3, 1e-4, 1e-5, 1e-6, 0]
+wd_l = [3e-3, 1e-3, 3e-4, 1e-4, 1e-5, 1e-6, 0]
 # wd_l = [1e-2, 3e-3, 1e-3, 3e-4, 1e-4, 1e-5, 1e-6, 0]
 
 # max_lr = 0.1
@@ -56,8 +56,7 @@ val_ds_str = "cifar100_val"
 
 # fil_ens_l = [(32, 1), (4, 64)]
 # fil_ens_l = [(32, 1), (16, 4), (8, 16), (4, 64)]
-fil_ens_l = [(64, 1), (16, 16), (8, 64), (4, 256)] # base = 64
-# fil_ens_l = [(32, 4), (2, 1024)] # base = 64
+fil_ens_l = [(64, 1), (16, 16), (4, 256)] # base = 64
 
 fils_l, ensembles_l = map(list, zip(*fil_ens_l))
 base_fils_l = [round(a * b ** (1/2)) for a, b in fil_ens_l]
