@@ -26,8 +26,8 @@ src_text, src_name= utils.get_source(with_name=True)
 
 fetch_ds = DatasetFetcher(root=work_path / "assets/datasets/")
 
-exp_name = "exp_opt_4090"
-# exp_name = "exp_tmp_4090"
+exp_name = "exp_opt"
+# exp_name = "exp_tmp"
 
 net = resnet18_git_ee
 
@@ -36,7 +36,7 @@ base_ndata = 10000
 ndata_l = [10000, 5000, 2000, 1000, 500]
 # wd_l = [5e-4, 1e-4, 3e-5, 1e-6, 3e-8, 0]
 # wd_l = [1e-3, 5e-4, 3e-4, 1e-4, 3e-5, 1e-5, 3e-6, 1e-6, 3e-7, 1e-7, 3e-8, 1e-8, 0]
-wd_l = [3e-3, 1e-3, 3e-4, 1e-4, 1e-5, 1e-6, 0]
+wd_l = [3e-3, 1e-3, 1e-4, 1e-5, 1e-6, 0]
 # wd_l = [1e-2, 3e-3, 1e-3, 3e-4, 1e-4, 1e-5, 1e-6, 0]
 
 # max_lr = 0.1
@@ -56,8 +56,8 @@ val_ds_str = "cifar100_val"
 
 # fil_ens_l = [(32, 1), (4, 64)]
 # fil_ens_l = [(32, 1), (16, 4), (8, 16), (4, 64)]
-fil_ens_l = [(64, 1), (16, 16), (4, 256)] # base = 64
-# fil_ens_l = [(32, 4), (2, 1024)] # base = 64
+# fil_ens_l = [(64, 1), (16, 16), (8, 64), (4, 256)] # base = 64
+fil_ens_l = [(32, 4), (2, 1024)] # base = 64
 
 fils_l, ensembles_l = map(list, zip(*fil_ens_l))
 base_fils_l = [round(a * b ** (1/2)) for a, b in fil_ens_l]
@@ -84,8 +84,8 @@ base_val_ds = base_val_ds.transform(val_trans)
 for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
     for ndata in ndata_l:
         for wd in wd_l:
-            if not utils.is_reached((optim, "adam"), (ndata, 500), (wd, 3e-4)):
-                continue
+            # if not utils.is_reached((optim, "adam")):
+                # continue
 
             train_ds = base_train_ds.balance_label(seed=0).in_ndata(ndata)
             val_ds = base_val_ds
@@ -142,16 +142,15 @@ for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
                 "scheduler": mtrainer.fmt_scheduler(),
             }
 
-
             runs_mgr.log_params(hp_dict)
             runs_mgr.log_text("model_repr.txt", network.repr_network())
             runs_mgr.log_text("model_torchinfo.txt", network.torchinfo(dl=train_dl))
 
             for e in range(epochs):
-                lrs = mtrainer.get_lr()
+                lr = mtrainer.get_lr()
 
                 train_loss, train_acc, aux_stats = mtrainer.train_1epoch(train_dl)
-                met_dict = {"epoch": e + 1, "train_loss": train_loss, "train_acc": train_acc}
+                met_dict = {"epoch": e + 1, "lr": lr, "train_loss": train_loss, "train_acc": train_acc}
 
                 if utils.interval(step=e + 1, itv=epochs/100, last_step=epochs):
                     val_loss, val_acc = mtrainer.val_1epoch(val_dl)
