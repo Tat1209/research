@@ -64,6 +64,8 @@ class EETrainer(Trainer):
         loss = self.criterion(outputs, labels)
         preds, corr = self.eval_flow(outputs, labels)
 
+        # last_momentum_norm = self.get_momentum_norm()
+
         self.update_grad(loss)
 
         stats = {"batch_loss": loss.item() * len(inputs), "batch_corr": corr, "batch_ndata": len(inputs)}
@@ -74,7 +76,8 @@ class EETrainer(Trainer):
             "grad_norm": self.network.grad_stat(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None) * len(inputs),
             "grad_norm_layer": {k: v * len(inputs) for k, v in self.network.grad_stat_layer(stat_f=lambda g: g.norm(p=2).item(), incl_if=lambda p: p.grad is not None).items()},
         }
-        params_stats |= {"g2w_ratio": params_stats["grad_norm"] / (params_stats["param_norm"])}
+        params_stats |= {"g2w_ratio": params_stats["grad_norm"] / params_stats["param_norm"] * len(inputs)}
+        # params_stats |= {"last_momentum_norm": last_momentum_norm}
 
         return stats.copy() | path_stats.copy() | params_stats.copy()
 
