@@ -81,10 +81,10 @@ match train_ds_str:
 base_train_ds = base_train_ds.transform(train_trans)
 base_val_ds = base_val_ds.transform(val_trans)
 
-for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
+for max_lr, optim in zip(max_lrs, ["sgd"]):
     for ndata in ndata_l:
         for wd in wd_l:
-            if not utils.is_reached((optim, "adam"), (ndata, 500), (wd, 3e-4)):
+            if not utils.is_reached((wd, 1e-4), (ndata, 500)):
                 continue
 
             train_ds = base_train_ds.balance_label(seed=0).in_ndata(ndata)
