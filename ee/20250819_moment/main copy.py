@@ -113,6 +113,7 @@ for max_lr, optim in zip(max_lrs, ["adam"]):
 
             runs_mgr.log_param("epochs", epochs := int(base_epochs * base_ndata / ndata + 1e-7))
             runs_mgr.log_param("max_lr", max_lr)
+
             runs_mgr.log_param("wd", wd)
             runs_mgr.log_param("batch_size", batch_size)
 
