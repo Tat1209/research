@@ -32,8 +32,8 @@ class CopyConcat(nn.Module):
     def forward(self, input):
         # inputにはバッチ(B, C, H, W)が入る。バッチ次元を考慮するため、dimに1たしてる
         eff_dim = self.dim + 1
-        # out = torch.cat([input for _ in range(self.n)], dim=eff_dim)
-        out = torch.cat([input.clone() for _ in range(self.n)], dim=eff_dim) # for safe
+        out = torch.cat([input for _ in range(self.n)], dim=eff_dim)
+        # out = torch.cat([input.clone() for _ in range(self.n)], dim=eff_dim) # for safe
         return out
 
 
