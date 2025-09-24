@@ -40,7 +40,7 @@ wd_l = [0]
 # wd_l = [1e-2, 3e-3, 1e-3, 3e-4, 1e-4, 1e-5, 1e-6, 0]
 
 # max_lr = 0.1
-max_lrs = (5e-3)
+max_lrs = (5e-3,)
 batch_size = 128
 
 # base_epochs = 2
@@ -81,7 +81,7 @@ match train_ds_str:
 base_train_ds = base_train_ds.transform(train_trans)
 base_val_ds = base_val_ds.transform(val_trans)
 
-for max_lr, optim in zip(max_lrs, ["sgd"]):
+for max_lr, optim in zip(max_lrs, ["adam"]):
     for ndata in ndata_l:
         train_ds = base_train_ds.balance_label(seed=0).in_ndata(ndata)
         val_ds = base_val_ds

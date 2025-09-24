@@ -1,10 +1,10 @@
 import subprocess
 
 scripts = [
-        "/home/haselab/Documents/tat/Research/app/ee_re_32/main_cifar_test.py",
-        "/home/haselab/Documents/tat/Research/app/ee_re_32/main_cifar_test copy.py",
-        "/home/haselab/Documents/tat/Research/app/ee_re_32/main_cifar_test copy 2.py",
-        "/home/haselab/Documents/tat/Research/app/ee_re_32/main_cifar_test copy 3.py",
+        # "/home/tat/research/ee/20250802_ca/main_p1.py",
+        # "/home/tat/research/ee/20250802_ca/main_p2.py",
+        "/home/tat/research/ee/20250802_ca/main_p3.py",
+        "/home/tat/research/ee/20250802_ca/main_p4.py",
 ]
 
 for script in scripts:
