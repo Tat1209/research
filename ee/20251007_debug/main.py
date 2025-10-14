@@ -26,18 +26,16 @@ src_text, src_name= utils.get_source(with_name=True)
 
 fetch_ds = DatasetFetcher(root=work_path / "assets/datasets/")
 
-exp_name = "exp_opt"
-# exp_name = "exp_tmp"
+exp_name = "exp_tmp"
 
 net = resnet18_git_ee
 
 base_epochs = 200
 base_ndata = 10000
-ndata_l = [10000, 5000, 2000, 1000, 500]
-# wd_l = [5e-4, 1e-4, 3e-5, 1e-6, 3e-8, 0]
-# wd_l = [1e-3, 5e-4, 3e-4, 1e-4, 3e-5, 1e-5, 3e-6, 1e-6, 3e-7, 1e-7, 3e-8, 1e-8, 0]
-wd_l = [3e-3, 1e-3, 1e-4, 1e-5, 1e-6, 0]
-# wd_l = [1e-2, 3e-3, 1e-3, 3e-4, 1e-4, 1e-5, 1e-6, 0]
+ndata_l = [1000]
+# ndata_l = [10000, 5000, 2000, 1000, 500]
+wd_l = [0, 3e-3]
+# wd_l = [3e-3, 1e-3, 1e-4, 1e-5, 1e-6, 0]
 
 # max_lr = 0.1
 max_lrs = (0.1, 5e-3)
@@ -56,7 +54,9 @@ val_ds_str = "cifar100_val"
 
 # fil_ens_l = [(32, 1), (4, 64)]
 # fil_ens_l = [(32, 1), (16, 4), (8, 16), (4, 64)]
-fil_ens_l = [(64, 1), (16, 16), (8, 64), (4, 256)] # base = 64
+# fil_ens_l = [(64, 1), (16, 16), (8, 64), (4, 256)] # base = 64
+fil_ens_l = [(2, 1024)] # base = 64
+# fil_ens_l = [(64, 1), (2, 1024)] # base = 64
 # fil_ens_l = [(32, 4), (2, 1024)] # base = 64
 
 fils_l, ensembles_l = map(list, zip(*fil_ens_l))
@@ -90,10 +90,10 @@ for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
         val_dl = val_ds.loader(batch_size, shuffle=False)
 
         for wd in wd_l:
-            if not utils.is_reached((optim, "adam"), (ndata, 2000), (wd, 1e-4), tag="a"):
-                continue
-            if utils.is_reached((ndata, 2000), (wd, 0), (optim, "adam"), tag="b"):
-                break
+            # if not utils.is_reached((optim, "adam"), (ndata, 5000), (wd, 1e-5), tag="a"):
+            #     continue
+            # if utils.is_reached((ndata, 2000), (wd, 0), (optim, "adam"), tag="b"):
+            #     break
 
             runs_mgr = RunsManager([RunManager(exec_path=__file__, exp_name=exp_name, exp_tpl="exp_tpl_ee") for _ in fil_ens_l])
             runs_mgr.log_param("model_arc", f"{net.__module__} {net.__name__}")
@@ -130,9 +130,10 @@ for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
                     optimizer = torch.optim.SGD(network.parameters(), lr=max_lr, momentum=0.9, weight_decay=wd, nesterov=True)
                 elif optim == "adam":
                     optimizer = torch.optim.AdamW(network.parameters(), lr=max_lr, weight_decay=wd)
-                scheduler_t = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0, last_epoch=-1)
+                # scheduler = None
+                scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0, last_epoch=-1)
                 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-                trainer = EETrainer(network, criterion, optimizer, scheduler_t, device)
+                trainer = EETrainer(network, criterion, optimizer, scheduler, device)
                 trainers.append(trainer)
                 
             mtrainer = MultiTrainer(trainers)
@@ -151,23 +152,26 @@ for max_lr, optim in zip(max_lrs, ["sgd", "adam"]):
             for e in range(epochs):
                 lr = mtrainer.get_lr()
 
-                train_loss, train_acc, aux_stats = mtrainer.train_1epoch(train_dl)
-                met_dict = {"epoch": e + 1, "lr": lr, "train_loss": train_loss, "train_acc": train_acc}
+                train_loss, train_acc, train_aux = mtrainer.train_1epoch(train_dl)
+                mets = {"epoch": e + 1, "lr": lr, "train_loss": train_loss, "train_acc": train_acc}
 
                 if utils.interval(step=e + 1, itv=epochs/100, last_step=epochs):
                     val_loss, val_acc, val_aux = mtrainer.val_1epoch(val_dl)
-                    met_dict.update({"val_loss": val_loss, "val_acc": val_acc})
+                    mets |= {"val_loss": val_loss, "val_acc": val_acc}
                 else:
-                    met_dict.update({"val_loss": None, "val_acc": None})
+                    val_aux = {}
+                    mets |= {"val_loss": None, "val_acc": None}
                     
-                runs_mgr.log_metrics(met_dict, step=e + 1)
-                runs_mgr.log_metrics(aux_stats, step=e + 1)
+                runs_mgr.log_metrics(mets, step=e + 1)
+                runs_mgr.log_metrics(train_aux, step=e + 1)
+                runs_mgr.log_metrics(val_aux, step=e + 1)
                 # runs_mgr.log_metrics(mtrainer.time_info(), step=e + 1)
                 runs_mgr.log_metrics(mtrainer.time_stats(incl_fmt=False), step=e + 1)
                 runs_mgr.log_metrics(mtrainer.time_stats_mt(incl_fmt=False), step=e + 1)
 
-                mtrainer.printmet(met_dict, e + 1, epochs, itv=epochs / 5)
+                mtrainer.printmet(mets, e + 1, epochs, itv=epochs / 5)
                 runs_mgr.ref_stats(step=e + 1, itv=epochs/100, last_step=epochs)
                 runs_mgr.ref_results(step=e + 1, itv=epochs/100, last_step=epochs)
 
             runs_mgr.log_torch_save(mtrainer.networks.get_sd(), "state_dict.pt")
+
