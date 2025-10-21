@@ -1,3 +1,12 @@
+"""
+The following implementation is a rewrite of the official version, adapted for EasyEnsemble:
+https://github.com/weiaicunzai/pytorch-cifar100/blob/master/models/resnet.py
+
+Additionally, to align with the channel grouping required by EasyEnsemble's grouped convolutions, 
+the weight initialization has been modified. It now applies Kaiming initialization 
+independently to each channel group to ensure proper variance.
+"""
+
 from functools import partial
 from typing import Any, Callable, List, Optional, Type, Union
 
@@ -5,14 +14,13 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from .modules import View, CopyConcat, SplitMerge
+from ..modules.ops import RepeatData, GroupedLinear, ChunkMerge
 
 # from ..transforms._presets import ImageClassification
 # from ..utils import _log_api_usage_once
 # from ._api import register_model, Weights, WeightsEnum
 # from ._meta import _IMAGENET_CATEGORIES
 # from ._utils import _ovewrite_named_param, handle_legacy_interface
-
 
 from torchvision.transforms._presets import ImageClassification
 from torchvision.utils import _log_api_usage_once
@@ -44,7 +52,6 @@ __all__ = [
         "wide_resnet50_2",
         "wide_resnet101_2",
         ]
-
 
 def conv3x3(in_planes: int, out_planes: int, stride: int = 1, groups: int = 1, dilation: int = 1) -> nn.Conv2d:
     """3x3 convolution with padding"""
@@ -190,9 +197,10 @@ class ResNet(nn.Module):
             width_per_group: int = 64,
             replace_stride_with_dilation: Optional[List[bool]] = None,
             norm_layer: Optional[Callable[..., nn.Module]] = None,
-            nb_fils: int = 64,
-            ee_groups: int = 1,
-            merge_mode = "mean"
+            channels: int = 64,
+            ensembles: int = 1,
+            merge_mode = "mean",
+            ee_init: bool = True,
             ) -> None:
         super().__init__()
         _log_api_usage_once(self)
@@ -200,8 +208,8 @@ class ResNet(nn.Module):
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
 
-        self.inplanes = nb_fils
-        width_per_group = nb_fils
+        self.inplanes = channels
+        width_per_group = channels
 
         self.dilation = 1
         if replace_stride_with_dilation is None:
@@ -213,37 +221,33 @@ class ResNet(nn.Module):
                     "replace_stride_with_dilation should be None "
                     f"or a 3-element tuple, got {replace_stride_with_dilation}"
                     )
-        self.ee_groups = ee_groups
-        self.groups = self.ee_groups
+        self.ensembles = ensembles
+        self.groups = self.ensembles
         self.base_width = width_per_group
         self.merge_mode = merge_mode
-        self.conv1 = nn.Sequential(
-                CopyConcat(self.ee_groups, dim=0),
-                nn.Conv2d(3 * self.groups, self.inplanes * self.groups, kernel_size=7, stride=2, padding=3, bias=False, groups=self.groups)
-        )
+
+        self.rp_data = RepeatData(self.ensembles)
+
+        self.conv1 = nn.Conv2d(3 * self.groups, self.inplanes * self.groups, kernel_size=7, stride=2, padding=3, bias=False, groups=self.groups)
         self.bn1 = norm_layer(self.inplanes * self.groups)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.layer1 = self._make_layer(block, nb_fils, layers[0])
-        self.layer2 = self._make_layer(block, nb_fils * 2, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
-        self.layer3 = self._make_layer(block, nb_fils * 4, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
-        self.layer4 = self._make_layer(block, nb_fils * 8, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
+        self.layer1 = self._make_layer(block, channels, layers[0])
+        self.layer2 = self._make_layer(block, channels * 2, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
+        self.layer3 = self._make_layer(block, channels * 4, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
+        self.layer4 = self._make_layer(block, channels * 8, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        fc_in = nb_fils * 8 * block.expansion
-        fc_out = num_classes
-        # self.fc = nn.Linear(fc_in, fc_out)
-        self.fc = nn.Sequential(
-                View((-1, 1)),
-                nn.Conv1d(fc_in * self.groups, fc_out * self.groups, kernel_size=1, bias=True, groups=self.groups),
-                View((-1,)),
-                SplitMerge(self.ee_groups, dim=0, mode = self.merge_mode),
-                )
+        self.fc = GroupedLinear(channels * 8 * block.expansion * self.ensembles, num_classes * self.ensembles, groups=self.ensembles, bias=True)
+
+        self.chunk_merge = ChunkMerge(self.ensembles, mode=self.merge_mode)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                # nn.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu") # official implementation
-                for w in m.weight.chunk(m.groups, dim=0):
-                    torch.nn.init.kaiming_normal_(w, mode='fan_out', nonlinearity='relu') # groups を指定した場合にも、適切な分散で初期化されるように
+                if ee_init: # Adjusted initialization for grouped convolutions
+                    for w in m.weight.chunk(m.groups, dim=0):
+                        nn.init.kaiming_normal_(w, mode='fan_out', nonlinearity='relu') # groups を指定した場合にも、適切な分散で初期化されるように
+                else: # Original initialization
+                    nn.init.kaiming_normal_(m.weight, mode="fan_out", nonlinearity="relu") # official implementation
             elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
@@ -301,7 +305,8 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def _forward_impl(self, x: Tensor) -> Tensor:
-        # See note [TorchScript super()]
+        x = self.rp_data(x)
+
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -315,6 +320,8 @@ class ResNet(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
+
+        x = self.chunk_merge(x)
 
         return x
 
