@@ -236,11 +236,11 @@ class ResNet(nn.Module):
 
         self.rp_data = RepeatData(self.ensembles)
 
-        self.conv1 = nn.Conv2d(3 * self.groups, self.inplanes * self.groups, kernel_size=3, padding=1, bias=False, groups=self.groups) # for cifar
+        self.conv1 = nn.Conv2d(3 * self.groups, self.inplanes * self.groups, kernel_size=3, padding=1, bias=False, groups=self.groups) # for CIFAR
         self.bn1 = norm_layer(self.inplanes * self.groups)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.layer1 = self._make_layer(block, channels, layers[0], stride=1)
+        self.layer1 = self._make_layer(block, channels, layers[0], stride=1) # for CIFAR
         self.layer2 = self._make_layer(block, channels * 2, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
         self.layer3 = self._make_layer(block, channels * 4, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
         self.layer4 = self._make_layer(block, channels * 8, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
@@ -318,9 +318,7 @@ class ResNet(nn.Module):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
-        
-        #--------------------------------------------------------------------------------------------------------------------------------------------
-        # x = self.maxpool(x)
+        # x = self.maxpool(x) # for CIFAR
 
         x = self.layer1(x)
         x = self.layer2(x)

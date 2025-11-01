@@ -1,0 +1,133 @@
+==========================================================================================================================================================================
+Layer (type (var_name))                       Input Shape               Output Shape              Kernel Shape              Param #                   Mult-Adds
+==========================================================================================================================================================================
+DataParallel (DataParallel)                   [128, 3, 96, 96]          [128, 10]                 --                        --                        --
+├─ResNet (module)                             [64, 3, 96, 96]           [64, 10]                  --                        11,254,176                --
+├─ResNet (module)                             --                        --                        --                        (recursive)               --
+│    └─Sequential (conv1)                     [64, 3, 96, 96]           [64, 256, 48, 48]         --                        37,632                    --
+│    └─Sequential (conv1)                     --                        --                        --                        (recursive)               --
+│    │    └─CopyConcat (0)                    [64, 3, 96, 96]           [64, 48, 96, 96]          --                        --                        --
+├─ResNet (module)                             [64, 3, 96, 96]           [64, 10]                  --                        --                        --
+├─ResNet (module)                             --                        --                        --                        (recursive)               --
+│    └─Sequential (conv1)                     [64, 3, 96, 96]           [64, 256, 48, 48]         --                        --                        --
+│    └─Sequential (conv1)                     --                        --                        --                        (recursive)               --
+│    │    └─CopyConcat (0)                    [64, 3, 96, 96]           [64, 48, 96, 96]          --                        --                        --
+│    │    └─Conv2d (1)                        [64, 48, 96, 96]          [64, 256, 48, 48]         [7, 7]                    37,632                    5,549,064,192
+│    │    └─Conv2d (1)                        [64, 48, 96, 96]          [64, 256, 48, 48]         [7, 7]                    --                        --
+│    └─BatchNorm2d (bn1)                      [64, 256, 48, 48]         [64, 256, 48, 48]         --                        512                       32,768
+│    └─ReLU (relu)                            [64, 256, 48, 48]         [64, 256, 48, 48]         --                        --                        --
+│    └─MaxPool2d (maxpool)                    [64, 256, 48, 48]         [64, 256, 24, 24]         3                         --                        --
+│    └─Sequential (layer1)                    [64, 256, 24, 24]         [64, 256, 24, 24]         --                        149,504                   --
+│    └─Sequential (layer1)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    [64, 256, 24, 24]         [64, 256, 24, 24]         --                        74,752                    0
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─BatchNorm2d (bn1)                      [64, 256, 48, 48]         [64, 256, 48, 48]         --                        --                        --
+│    └─ReLU (relu)                            [64, 256, 48, 48]         [64, 256, 48, 48]         --                        --                        --
+│    └─MaxPool2d (maxpool)                    [64, 256, 48, 48]         [64, 256, 24, 24]         3                         --                        --
+│    └─Sequential (layer1)                    [64, 256, 24, 24]         [64, 256, 24, 24]         --                        --                        --
+│    └─Sequential (layer1)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    [64, 256, 24, 24]         [64, 256, 24, 24]         --                        --                        --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    [64, 256, 24, 24]         [64, 256, 24, 24]         --                        --                        --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    [64, 256, 24, 24]         [64, 256, 24, 24]         --                        74,752                    0
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer2)                    [64, 256, 24, 24]         [64, 512, 12, 12]         --                        --                        --
+│    └─Sequential (layer2)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    [64, 256, 24, 24]         [64, 512, 12, 12]         --                        --                        --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer1)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer2)                    [64, 256, 24, 24]         [64, 512, 12, 12]         --                        529,408                   --
+│    └─Sequential (layer2)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    [64, 256, 24, 24]         [64, 512, 12, 12]         --                        232,448                   0
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    [64, 512, 12, 12]         [64, 512, 12, 12]         --                        --                        --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer3)                    [64, 512, 12, 12]         [64, 1024, 6, 6]          --                        --                        --
+│    └─Sequential (layer3)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    [64, 512, 12, 12]         [64, 1024, 6, 6]          --                        --                        --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer2)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    [64, 512, 12, 12]         [64, 512, 12, 12]         --                        296,960                   0
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer3)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer2)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer3)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer2)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer3)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer2)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer3)                    [64, 512, 12, 12]         [64, 1024, 6, 6]          --                        2,107,392                 --
+│    └─Sequential (layer3)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    [64, 512, 12, 12]         [64, 1024, 6, 6]          --                        923,648                   0
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    [64, 1024, 6, 6]          [64, 1024, 6, 6]          --                        --                        --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer4)                    [64, 1024, 6, 6]          [64, 2048, 3, 3]          --                        --                        --
+│    └─Sequential (layer4)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    [64, 1024, 6, 6]          [64, 2048, 3, 3]          --                        --                        --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer3)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer4)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer3)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    [64, 1024, 6, 6]          [64, 1024, 6, 6]          --                        1,183,744                 0
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer4)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer3)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (layer4)                    [64, 1024, 6, 6]          [64, 2048, 3, 3]          --                        8,409,088                 --
+│    └─Sequential (layer4)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    [64, 1024, 6, 6]          [64, 2048, 3, 3]          --                        3,682,304                 0
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    [64, 2048, 3, 3]          [64, 2048, 3, 3]          --                        --                        --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─AdaptiveAvgPool2d (avgpool)            [64, 2048, 3, 3]          [64, 2048, 1, 1]          --                        --                        --
+│    └─Sequential (fc)                        [64, 2048]                [64, 10]                  --                        --                        --
+│    └─Sequential (fc)                        --                        --                        --                        (recursive)               --
+│    │    └─View (0)                          [64, 2048]                [64, 2048, 1]             --                        --                        --
+│    │    └─Conv1d (1)                        [64, 2048, 1]             [64, 160, 1]              [1]                       --                        --
+│    └─Sequential (layer4)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (0)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    [64, 2048, 3, 3]          [64, 2048, 3, 3]          --                        4,726,784                 0
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─Sequential (fc)                        --                        --                        --                        (recursive)               --
+│    │    └─View (2)                          [64, 160, 1]              [64, 160]                 --                        --                        --
+│    │    └─SplitMerge (3)                    [64, 160]                 [64, 10]                  --                        --                        --
+│    └─Sequential (layer4)                    --                        --                        --                        (recursive)               --
+│    │    └─BasicBlock (1)                    --                        --                        --                        (recursive)               --
+│    └─AdaptiveAvgPool2d (avgpool)            [64, 2048, 3, 3]          [64, 2048, 1, 1]          --                        --                        --
+│    └─Sequential (fc)                        [64, 2048]                [64, 10]                  --                        20,640                    --
+│    └─Sequential (fc)                        --                        --                        --                        (recursive)               --
+│    │    └─View (0)                          [64, 2048]                [64, 2048, 1]             --                        --                        --
+│    │    └─Conv1d (1)                        [64, 2048, 1]             [64, 160, 1]              [1]                       20,640                    1,320,960
+│    │    └─View (2)                          [64, 160, 1]              [64, 160]                 --                        --                        --
+│    │    └─SplitMerge (3)                    [64, 160]                 [64, 10]                  --                        --                        --
+==========================================================================================================================================================================
+Total params: 45,136,608
+Trainable params: 45,136,608
+Non-trainable params: 0
+Total mult-adds (Units.GIGABYTES): 25.48
+==========================================================================================================================================================================
+Input size (MB): 14.16
+Forward/backward pass size (MB): 1868.64
+Params size (MB): 45.02
+Estimated Total Size (MB): 1927.82
+==========================================================================================================================================================================

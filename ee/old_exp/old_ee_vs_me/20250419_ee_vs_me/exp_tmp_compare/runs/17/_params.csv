@@ -1,2 +1,0 @@
-model_arc,epochs,ensemble_type,params,grad
-models.resnet_ee resnet18,10,EE,2886528,2886528

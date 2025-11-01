@@ -1,2 +1,0 @@
-model_arc,train_dataset,num_classes,train_trans,train_num,epochs,max_lr,batch_size,iters/epoch,params,loss_func,optimizer,scheduler
-models.csg_nets AutoEncoder,cifar10_train,10,[ToTensor()],50000,100,0.0003,32,1563,2678155,MSELoss(),"Adam ( Parameter Group 0     amsgrad: False     betas: (0.9, 0.999)     capturable: False     differentiable: False     eps: 1e-07     foreach: None     fused: None     lr: 0.0003     maximize: False     weight_decay: 0 )",

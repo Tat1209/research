@@ -1,2 +1,0 @@
-epochs,ensemble_type,params,grad,train_loss,train_acc,val_loss,val_acc
-80,EE,2855808,2855808,0.37368430652618406,0.8768,1.0416813056945802,0.6828

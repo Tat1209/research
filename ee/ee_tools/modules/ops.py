@@ -119,6 +119,33 @@ class GroupedLinear(nn.Module):
     def extra_repr(self) -> str:
         return f"in_features={self.in_features}, out_features={self.out_features}, groups={self.groups}, bias={self.bias is not None}"
 
+class GroupedLinearConv1d(nn.Module):
+    def __init__(self, in_features: int, out_features: int, 
+                 groups: int, bias: bool = True):
+        super().__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.groups = groups
+        self.conv = nn.Conv1d(
+            in_channels=in_features,
+            out_channels=out_features,
+            kernel_size=1,
+            groups=groups,
+            bias=bias
+        )
+    
+    def forward(self, x):
+        if x.dim() != 3:
+            batch_size = x.size(0)
+            # 入力 (B, C) を (B, C, 1) に変形
+            x = x.view(batch_size, -1, 1)
+        
+        # 1D畳み込みを実行
+        x = self.conv(x)
+        
+        # 出力 (B, C_out, 1) を (B, C_out) に変形
+        x = x.view(x.size(0), self.out_features)
+        return x
 
 class CopyConcat(nn.Module):
     def __init__(self, n, dim):

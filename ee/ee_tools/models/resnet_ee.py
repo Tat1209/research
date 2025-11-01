@@ -1,10 +1,10 @@
 """
 The following implementation is a rewrite of the official version, adapted for EasyEnsemble:
-https://github.com/weiaicunzai/pytorch-cifar100/blob/master/models/resnet.py
-
 Additionally, to align with the channel grouping required by EasyEnsemble's grouped convolutions, 
-the weight initialization has been modified. It now applies Kaiming initialization 
-independently to each channel group to ensure proper variance.
+Furthermore, to properly support the grouped architecture, the weight 
+initialization scheme has been adjusted. It now applies Kaiming initialization 
+independently to each channel group, ensuring correct variance for each 
+ensemble member.
 """
 
 from functools import partial
