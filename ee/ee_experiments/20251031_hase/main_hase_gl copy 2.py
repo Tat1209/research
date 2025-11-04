@@ -22,15 +22,16 @@ from ee_tools.ee_trainer import EETrainer
 from ee_tools.models.resnet_ee import resnet18 as resnet18_ee
 from ee_tools.models.resnet_ee import resnet50 as resnet50_ee
 from ee_tools.models.resnet_cifar_ee import resnet18 as resnet18_cifar_ee
+from ee_tools.models.resnet_cifar_ee_ghase import resnet18 as resnet18_cifar_ghase
 from ee_tools.models.resnet_cifar_hase import resnet18 as resnet18_cifar_hase
 from ee_tools.models.resnet_cifar_ee import resnet50 as resnet50_cifar_ee
 
 def main():
     src_text, src_name= utils.get_source(with_name=True)
 
-    # exp_name = "exp_hase"
+    exp_name = "exp_hase_gl3"
     # exp_name = "exp_sync_mod"
-    exp_name = "exp_tmp"
+    # exp_name = "exp_tmp"
 
     # net = resnet18_ee
     net = resnet18_cifar_hase
@@ -81,7 +82,7 @@ def main():
                     train_trans = [transforms.ToImage(), transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(), transforms.RandomRotation(15), transforms.ToDtype(torch.float32, scale=True), base_train_ds.normalizer()]
                     val_trans = [transforms.ToImage(), transforms.ToDtype(torch.float32, scale=True), base_train_ds.normalizer()]
                 case "cifar100_train":
-                    train_trans = [transforms.ToImage(), transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(), transforms.RandomRotation(15), transforms.ToDtype(torch.float32, scale=True), base_train_ds.normalizer()]
+                    train_trans = [transforms.ToImage(), transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(), transforms.ToDtype(torch.float32, scale=True), base_train_ds.normalizer()]
                     val_trans = [transforms.ToImage(), transforms.ToDtype(torch.float32, scale=True), base_train_ds.normalizer()]
                 case "stl10_train":
                     train_trans = [transforms.ToImage(), transforms.RandomHorizontalFlip(p=0.5), transforms.RandomRotation(degrees=(0, 360)), transforms.ToDtype(torch.float32, scale=True), base_train_ds.normalizer()]
@@ -97,7 +98,6 @@ def main():
 
             runs_mgr = RunsManager([RunManager(exec_path=__file__, exp_name=exp_name, exp_tpl="exp_tpl_ee") for _ in chs_ens_l])
             runs_mgr.log_param("model_arc", f"{net.__module__} {net.__name__}")
-            runs_mgr.log_param("da", "with_rr")
 
             runs_mgr.log_param("train_dataset", train_ds.state.dataset_id)
             runs_mgr.log_param("val_dataset", val_ds.state.dataset_id)
