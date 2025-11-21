@@ -9,24 +9,23 @@ from torch.nn import functional as F
 from torch.nn import init
 from torch.nn.parameter import Parameter, UninitializedParameter
 
-from torch.nn.modules.lazy import LazyModuleMixin
-from torch.nn.modules.module import Module
-
-class View(nn.Module):
-    def __init__(self, shape):
+class RepeatData(nn.Module):
+    def __init__(self, n):
         super().__init__()
-        self.shape = shape
+        self.n = n
+        # self.data_dim = data_dim
 
     def __repr__(self):
-        return f'{self.__class__.__name__}{self.shape}'
+        return f'{self.__class__.__name__}({self.n})'
 
     def forward(self, input):
-        batch_size = input.size(0)
-        target = (batch_size, *self.shape)
-        out = input.view(target)
-        return out
+        num_dims = input.dim()
+        # eff_dim = self.data_dim + 1 # batch次元を考慮
+        # rep_pattern = [self.n if i == eff_dim else 1 for i in range(num_dims)]
+        rep_pattern = [self.n if i == 1 else 1 for i in range(num_dims)] # [1, n, 1, ..., 1]
 
-
+        return input.repeat(rep_pattern)
+        
 class GroupedLinear(nn.Module):
     __constants__ = ["in_features", "out_features", "groups"]
     in_features: int
@@ -118,103 +117,6 @@ class GroupedLinear(nn.Module):
 
     def extra_repr(self) -> str:
         return f"in_features={self.in_features}, out_features={self.out_features}, groups={self.groups}, bias={self.bias is not None}"
-
-class GroupedLinearConv1d(nn.Module):
-    def __init__(self, in_features: int, out_features: int, 
-                 groups: int, bias: bool = True):
-        super().__init__()
-        self.in_features = in_features
-        self.out_features = out_features
-        self.groups = groups
-        self.conv = nn.Conv1d(
-            in_channels=in_features,
-            out_channels=out_features,
-            kernel_size=1,
-            groups=groups,
-            bias=bias
-        )
-    
-    def forward(self, x):
-        if x.dim() != 3:
-            batch_size = x.size(0)
-            # 入力 (B, C) を (B, C, 1) に変形
-            x = x.view(batch_size, -1, 1)
-        
-        # 1D畳み込みを実行
-        x = self.conv(x)
-        
-        # 出力 (B, C_out, 1) を (B, C_out) に変形
-        x = x.view(x.size(0), self.out_features)
-        return x
-
-class CopyConcat(nn.Module):
-    def __init__(self, n, dim):
-        super().__init__()
-        # dimは、(C, H, W) に対する処理を想定
-        self.n = n
-        self.dim = dim
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}({self.n}, {self.dim})'
-
-    def forward(self, input):
-        # inputにはバッチ(B, C, H, W)が入る。バッチ次元を考慮するため、dimに1たしてる
-        eff_dim = self.dim + 1
-        out = torch.cat([input for _ in range(self.n)], dim=eff_dim)
-        # out = torch.cat([input.clone() for _ in range(self.n)], dim=eff_dim) # for safe
-        return out
-
-
-class SplitMerge(nn.Module):
-    def __init__(
-        self,
-        chunks: int,
-        dim: int,
-        mode: Literal["mean", "sum", "none", "both"] = "mean"
-    ):
-        super().__init__()
-        assert chunks > 0, f'chunks must be positive int, got {chunks}'
-        self.chunks = chunks
-        self.dim = dim
-        self.mode = mode
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}({self.chunks}, mode="{self.mode}")'
-
-    def forward(self, input: torch.Tensor):
-        eff_dim = self.dim + 1
-        chunks = torch.chunk(input, self.chunks, dim=eff_dim)
-        merged = torch.stack(chunks, dim=eff_dim)
-
-        if self.mode == "sum":
-            return merged.sum(dim=eff_dim)
-        elif self.mode == "mean":
-            return merged.mean(dim=eff_dim)
-        elif self.mode == "both":
-            return merged.mean(dim=eff_dim), chunks
-        elif self.mode == "none":
-            return chunks
-        else:
-            raise ValueError(f"Unsupported mode: {self.mode}")
-        
-        
-class RepeatData(nn.Module):
-    def __init__(self, n):
-        super().__init__()
-        self.n = n
-        # self.data_dim = data_dim
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}({self.n})'
-
-    def forward(self, input):
-        num_dims = input.dim()
-        # eff_dim = self.data_dim + 1 # batch次元を考慮
-        # rep_pattern = [self.n if i == eff_dim else 1 for i in range(num_dims)]
-        rep_pattern = [self.n if i == 1 else 1 for i in range(num_dims)] # [1, n, 1, ..., 1]
-
-        return input.repeat(rep_pattern)
-        
         
 class ChunkMerge(nn.Module):
     def __init__(self, chunks, mode: Literal["mean", "sum", "none", "both"] = "mean"):
