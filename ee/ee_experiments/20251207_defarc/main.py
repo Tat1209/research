@@ -13,7 +13,6 @@ def main():
     cfg["val_ds_str"] = "cifar100_val"
 
     cfg["base_epochs"] = 200
-    cfg["batch_size"] = 32
     cfg["base_ndata"] = 10000
 
     cfg["wd"] = [1e-3, 0]

@@ -36,7 +36,6 @@ def exp(cfg: dict):
 
     base_epochs = cfg["base_epochs"]
     optim_str, max_lr = cfg["optim_lr"]
-    batch_size = cfg["batch_size"]
 
     base_ndata = cfg["base_ndata"]
 
