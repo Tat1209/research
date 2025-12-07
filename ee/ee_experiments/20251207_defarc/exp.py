@@ -92,7 +92,7 @@ def exp(cfg: dict):
 
     run_mgr.log_param("iters/epoch", len(train_dl))
     run_mgr.log_param("iters", len(train_dl) * epochs)
-    run_mgr.log_param("target_steps", base_ndata * base_epochs)
+    run_mgr.log_param("processed_ndata", ndata * epochs)
     run_mgr.log_param("ndata_per_class", len(train_ds) / num_classes)
     run_mgr.log_param("div", div)
     run_mgr.log_param("ensembles", ens)
