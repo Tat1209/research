@@ -1,0 +1,457 @@
+EEWrapper(
+  (model): RegNet(
+    (stem): SimpleStemIN(
+      (0): Conv2d(12, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=4, bias=False)
+      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (trunk_output): Sequential(
+      (block1): AnyStage(
+        (block1-0): ResBottleneckBlock(
+          (proj): Conv2dNormActivation(
+            (0): Conv2d(64, 512, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+            (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(64, 512, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=8, bias=False)
+              (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block1-1): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=8, bias=False)
+              (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+      )
+      (block2): AnyStage(
+        (block2-0): ResBottleneckBlock(
+          (proj): Conv2dNormActivation(
+            (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(2, 2), groups=4, bias=False)
+            (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=16, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block2-1): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=16, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block2-2): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=16, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block2-3): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=16, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block2-4): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=16, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block2-5): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=16, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+      )
+      (block3): AnyStage(
+        (block3-0): ResBottleneckBlock(
+          (proj): Conv2dNormActivation(
+            (0): Conv2d(1024, 1792, kernel_size=(1, 1), stride=(2, 2), groups=4, bias=False)
+            (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1024, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-1): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-2): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-3): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-4): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-5): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-6): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-7): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-8): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-9): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-10): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-11): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-12): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=28, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(1792, 1792, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(1792, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+      )
+      (block4): AnyStage(
+        (block4-0): ResBottleneckBlock(
+          (proj): Conv2dNormActivation(
+            (0): Conv2d(1792, 4096, kernel_size=(1, 1), stride=(2, 2), groups=4, bias=False)
+            (1): BatchNorm2d(4096, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(1792, 4096, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(4096, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(4096, 4096, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=64, bias=False)
+              (1): BatchNorm2d(4096, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(4096, 4096, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(4096, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+      )
+    )
+    (avgpool): AdaptiveAvgPool2d(output_size=(1, 1))
+    (fc): GroupedLinear(in_features=4096, out_features=400, groups=4, bias=True)
+  )
+  (repeater): RepeatData(4)
+  (chunk_merge): ChunkMerge()
+)

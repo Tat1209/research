@@ -1,0 +1,22 @@
+exp_name: "exp_tmp"
+
+model_name: resnet18
+batch_size: 128
+base_epochs: 100
+base_ndata: 10000
+
+dataset:
+  train_ds_str: "cifar100_train"
+  val_ds_str: "cifar100_val"
+
+wd: 0
+div: 1
+ndata: 10000
+
+optim_lr:
+  optim: sgd
+  lr: 0.1
+
+hydra:
+  run:
+    dir: ./${exp_name}/runs/run_${now:%Y-%m-%d_%H-%M-%S_%f}

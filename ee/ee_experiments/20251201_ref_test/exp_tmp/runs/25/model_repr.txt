@@ -1,0 +1,542 @@
+EEWrapper(
+  (model): ConvNeXt(
+    (features): Sequential(
+      (0): Conv2dNormActivation(
+        (0): Conv2d(12, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=4)
+        (1): GroupNorm(4, 192, eps=1e-06, affine=True)
+      )
+      (1): Sequential(
+        (0): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(192, 192, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=192)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 192, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=192, out_features=768, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=768, out_features=192, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.0, mode=row)
+        )
+        (1): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(192, 192, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=192)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 192, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=192, out_features=768, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=768, out_features=192, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.011428571428571429, mode=row)
+        )
+        (2): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(192, 192, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=192)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 192, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=192, out_features=768, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=768, out_features=192, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.022857142857142857, mode=row)
+        )
+      )
+      (2): Sequential(
+        (0): GroupNorm(4, 192, eps=1e-06, affine=True)
+        (1): Conv2d(192, 384, kernel_size=(2, 2), stride=(2, 2), groups=4)
+      )
+      (3): Sequential(
+        (0): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(384, 384, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=384)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 384, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=384, out_features=1536, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=1536, out_features=384, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.03428571428571429, mode=row)
+        )
+        (1): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(384, 384, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=384)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 384, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=384, out_features=1536, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=1536, out_features=384, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.045714285714285714, mode=row)
+        )
+        (2): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(384, 384, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=384)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 384, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=384, out_features=1536, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=1536, out_features=384, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.05714285714285714, mode=row)
+        )
+      )
+      (4): Sequential(
+        (0): GroupNorm(4, 384, eps=1e-06, affine=True)
+        (1): Conv2d(384, 768, kernel_size=(2, 2), stride=(2, 2), groups=4)
+      )
+      (5): Sequential(
+        (0): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.06857142857142857, mode=row)
+        )
+        (1): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.08, mode=row)
+        )
+        (2): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.09142857142857143, mode=row)
+        )
+        (3): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.10285714285714286, mode=row)
+        )
+        (4): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.11428571428571428, mode=row)
+        )
+        (5): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.12571428571428572, mode=row)
+        )
+        (6): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.13714285714285715, mode=row)
+        )
+        (7): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.14857142857142858, mode=row)
+        )
+        (8): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.16, mode=row)
+        )
+        (9): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.17142857142857143, mode=row)
+        )
+        (10): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.18285714285714286, mode=row)
+        )
+        (11): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.1942857142857143, mode=row)
+        )
+        (12): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.2057142857142857, mode=row)
+        )
+        (13): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.21714285714285717, mode=row)
+        )
+        (14): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.22857142857142856, mode=row)
+        )
+        (15): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.24000000000000002, mode=row)
+        )
+        (16): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.25142857142857145, mode=row)
+        )
+        (17): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.2628571428571429, mode=row)
+        )
+        (18): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.2742857142857143, mode=row)
+        )
+        (19): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.2857142857142857, mode=row)
+        )
+        (20): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.29714285714285715, mode=row)
+        )
+        (21): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.3085714285714286, mode=row)
+        )
+        (22): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.32, mode=row)
+        )
+        (23): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.33142857142857146, mode=row)
+        )
+        (24): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.34285714285714286, mode=row)
+        )
+        (25): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.3542857142857143, mode=row)
+        )
+        (26): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(768, 768, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=768)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 768, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=768, out_features=3072, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=3072, out_features=768, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.3657142857142857, mode=row)
+        )
+      )
+      (6): Sequential(
+        (0): GroupNorm(4, 768, eps=1e-06, affine=True)
+        (1): Conv2d(768, 1536, kernel_size=(2, 2), stride=(2, 2), groups=4)
+      )
+      (7): Sequential(
+        (0): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(1536, 1536, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=1536)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 1536, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=1536, out_features=6144, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=6144, out_features=1536, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.37714285714285717, mode=row)
+        )
+        (1): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(1536, 1536, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=1536)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 1536, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=1536, out_features=6144, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=6144, out_features=1536, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.3885714285714286, mode=row)
+        )
+        (2): CNBlock(
+          (block): Sequential(
+            (0): Conv2d(1536, 1536, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), groups=1536)
+            (1): Permute()
+            (2): PermutedGroupNorm(
+              (gn): GroupNorm(4, 1536, eps=1e-06, affine=True)
+            )
+            (3): GroupedLinear(in_features=1536, out_features=6144, groups=4, bias=True)
+            (4): GELU(approximate='none')
+            (5): GroupedLinear(in_features=6144, out_features=1536, groups=4, bias=True)
+            (6): Permute()
+          )
+          (stochastic_depth): StochasticDepth(p=0.4, mode=row)
+        )
+      )
+    )
+    (avgpool): AdaptiveAvgPool2d(output_size=1)
+    (classifier): Sequential(
+      (0): GroupNorm(4, 1536, eps=1e-06, affine=True)
+      (1): Flatten(start_dim=1, end_dim=-1)
+      (2): GroupedLinear(in_features=1536, out_features=400, groups=4, bias=True)
+    )
+  )
+  (repeater): RepeatData(4)
+  (chunk_merge): ChunkMerge()
+)
