@@ -23,6 +23,8 @@ from trainer import MultiTrainer, Trainer
 
 
 def exp(cfg: dict):
+    torch.set_num_threads(cfg["num_threads"]) 
+    torch.set_num_interop_threads(cfg["num_interop_threads"])
     src_text, src_name= utils.get_source(path=this_path, with_name=True)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -20,6 +20,8 @@ def main():
     cfg["ndata"] = [50000, 20000, 10000, 5000, 2000, 1000, 500, 100]
     cfg["optim_lr"] = [("sgd", 0.1), ("adamw", 0.005)]
     
+    cfg["num_threads"] = 8
+    cfg["num_interop_threads"] = 4
     cfg["compile"] = True
     
     parallel_run(task_func=exp, config=cfg, check_interval=10.0, avoid_used=True)
