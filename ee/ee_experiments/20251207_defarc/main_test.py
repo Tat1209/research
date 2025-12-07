@@ -6,7 +6,10 @@ def main():
 
     cfg["exp_name"] = "exp_tmp"
 
-    cfg["model_name"] = "resnet18"
+    # cfg["model_name"] = "resnet18"
+    model = ["resnet18"]
+    batch_size = [128]
+    cfg["model_batch"] = list(zip(model, batch_size))
     cfg["train_ds_str"] = "cifar100_train"
     cfg["val_ds_str"] = "cifar100_val"
 
@@ -18,13 +21,10 @@ def main():
     cfg["div"] = [1, 4]
     cfg["ndata"] = [10000]
     cfg["optim_lr"] = [("sgd", 0.1)]
+
+    cfg["compile"] = False
     
-    parallel_run(
-        task_func=exp,
-        config=cfg,
-        check_interval=10.0,
-        avoid_used=True,
-        )
+    parallel_run(task_func=exp, config=cfg, check_interval=10.0, avoid_used=True)
 
 if __name__ == "__main__":
     main()

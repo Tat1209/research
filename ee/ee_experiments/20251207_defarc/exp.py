@@ -28,8 +28,8 @@ def exp(cfg: dict):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     exp_name = cfg["exp_name"]
-
-    net = getattr(models, cfg["model_name"])
+    model_name, batch_size = cfg["model_batch"] 
+    net = getattr(models, model_name)
 
     train_ds_str = cfg["train_ds_str"]
     val_ds_str = cfg["val_ds_str"]
@@ -73,7 +73,8 @@ def exp(cfg: dict):
     val_dl = val_ds.loader(batch_size, shuffle=False)
 
     run_mgr = RunManager(exc_path=this_path, exp_name=exp_name, exp_tpl="exp_tpl_ee")
-    run_mgr.log_param("model_arc", f"{net.__module__} {net.__name__}")
+    run_mgr.log_param("model_arc", f"{net.__name__}")
+    # run_mgr.log_param("model_arc", f"{net.__module__} {net.__name__}")
 
     run_mgr.log_param("train_dataset", train_ds.state.dataset_id)
     run_mgr.log_param("val_dataset", val_ds.state.dataset_id)
@@ -100,7 +101,8 @@ def exp(cfg: dict):
     run_mgr.log_text(src_name, src_text)
 
     network = Network(EERefiner(net(num_classes=num_classes)).cifar_style().multi_narrow(div=div, agg="mean").init_weights().build().to(device))
-    network = torch.compile(network, mode="max-autotune")
+    if cfg["compile"]:
+        network = torch.compile(network, mode="max-autotune")
     criterion = torch.nn.CrossEntropyLoss()
     if optim_str == "sgd":
         optimizer = torch.optim.SGD(network.parameters(), lr=max_lr, momentum=0.9, weight_decay=wd, nesterov=True, fused=True)
