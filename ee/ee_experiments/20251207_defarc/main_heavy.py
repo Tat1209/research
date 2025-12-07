@@ -7,13 +7,13 @@ def main():
 
     cfg["exp_name"] = "exp_tmp"
 
-    cfg["model_name"] = ["resnet18", "mobilenet_v2", "efficientnet_b0"]
-    # cfg["model_name"] = ["resnet18", "resnet50", "mobilenet_v2", "efficientnet_b0", "convnext_tiny", "wide_resnet50_2", ]
+    # cfg["model_name"] = ["resnet18", "mobilenet_v2", "efficientnet_b0"]
+    cfg["model_name"] = ["resnet50", "convnext_tiny", "wide_resnet50_2", ]
     cfg["train_ds_str"] = "cifar100_train"
     cfg["val_ds_str"] = "cifar100_val"
 
     cfg["base_epochs"] = 200
-    cfg["batch_size"] = 128
+    cfg["batch_size"] = 32
     cfg["base_ndata"] = 10000
 
     cfg["wd"] = [1e-3, 0]

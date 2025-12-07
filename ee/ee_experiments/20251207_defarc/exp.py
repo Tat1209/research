@@ -41,7 +41,7 @@ def exp(cfg: dict):
     base_ndata = cfg["base_ndata"]
 
     ndata = cfg["ndata"]
-    epochs = 100 if ndata == 50000 else base_epochs * base_ndata // ndata
+    epochs = 100 if ndata >= 20000 else base_epochs * base_ndata // ndata
 
     wd = cfg["wd"]
     div = cfg["div"]
@@ -100,7 +100,7 @@ def exp(cfg: dict):
     run_mgr.log_text(src_name, src_text)
 
     network = Network(EERefiner(net(num_classes=num_classes)).cifar_style().multi_narrow(div=div, agg="mean").init_weights().build().to(device))
-    # network = torch.compile(network, mode="max-autotune")
+    network = torch.compile(network, mode="max-autotune")
     criterion = torch.nn.CrossEntropyLoss()
     if optim_str == "sgd":
         optimizer = torch.optim.SGD(network.parameters(), lr=max_lr, momentum=0.9, weight_decay=wd, nesterov=True, fused=True)
@@ -148,6 +148,3 @@ def exp(cfg: dict):
 
     # run_mgr.log_torch_save(trainer.network.get_sd(), "state_dict.pt")  # get_sdはいまない
 
-
-if __name__ == "__main__":
-    exp({})
