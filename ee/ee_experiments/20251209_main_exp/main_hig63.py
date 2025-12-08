@@ -28,7 +28,7 @@ def main():
     cfg["num_workers"] = 2
     cfg["compile"] = True
     
-    parallel_run(task_func=exp, config=cfg, check_interval=10.0, avoid_used=True, util_th=10, free_mem_th=20000)
+    parallel_run(task_func=exp, config=cfg, avoid_used=True, gpu_ids=[0,1,2])
 
 if __name__ == "__main__":
     main()
