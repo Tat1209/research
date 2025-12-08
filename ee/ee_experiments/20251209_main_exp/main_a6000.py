@@ -11,8 +11,8 @@ def main():
     cfg["wd"] = [1e-3, 0]
     cfg[("optim_str", "max_lr")] = list(zip(["adamw", "sgd"], [0.005, 0.1]))
 
-    model_str = ["resnet18", "mobilenet_v2", "efficientnet_b0", "efficientnet_b1", "efficientnet_b2", "convnext_tiny", "convnext_small", "resnet50", "wide_resnet50_2"]
-    batch_size = [128, 128, 128, 48, 64, 64, 32, 96, 64]
+    model_str = ["convnext_tiny", "efficientnet_b0", "convnext_small", "efficientnet_b1", "efficientnet_b2", "wide_resnet50_2"]
+    batch_size = [48, 128, 32, 64, 64, 64]
     cfg[("model_str", "batch_size")] = list(zip(model_str, batch_size))
 
 

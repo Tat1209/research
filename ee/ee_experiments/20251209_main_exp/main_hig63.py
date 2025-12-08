@@ -11,8 +11,8 @@ def main():
     cfg["wd"] = [1e-3, 0]
     cfg[("optim_str", "max_lr")] = list(zip(["adamw", "sgd"], [0.005, 0.1]))
 
-    model_str = ["resnet18", "mobilenet_v2", "efficientnet_b0", "efficientnet_b1", "efficientnet_b2", "convnext_tiny", "convnext_small", "resnet50", "wide_resnet50_2"]
-    batch_size = [128, 128, 128, 48, 64, 64, 32, 96, 64]
+    model_str = ["resnet18", "mobilenet_v2", "resnet50"]
+    batch_size = [128, 128, 48]
     cfg[("model_str", "batch_size")] = list(zip(model_str, batch_size))
 
 
@@ -28,7 +28,7 @@ def main():
     cfg["num_workers"] = 2
     cfg["compile"] = True
     
-    parallel_run(task_func=exp, config=cfg, check_interval=10.0, avoid_used=True)
+    parallel_run(task_func=exp, config=cfg, check_interval=10.0, avoid_used=True, util_th=10, free_mem_th=20000)
 
 if __name__ == "__main__":
     main()
