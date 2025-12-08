@@ -30,24 +30,21 @@ def exp(cfg: dict):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     exp_name = cfg["exp_name"]
-    model_name, batch_size = cfg["model_batch"] 
-    net = getattr(models, model_name)
+    net = getattr(models, cfg["model_str"])
 
     train_ds_str = cfg["train_ds_str"]
     val_ds_str = cfg["val_ds_str"]
-
-    base_epochs = cfg["base_epochs"]
-    optim_str, max_lr = cfg["optim_lr"]
-
-    base_ndata = cfg["base_ndata"]
-
     ndata = cfg["ndata"]
-    epochs = 100 if ndata >= 20000 else base_epochs * base_ndata // ndata
 
+    epochs = cfg["epochs"]
+    optim_str = cfg["optim_str"]
+    max_lr = cfg["max_lr"]
+    batch_size = cfg["batch_size"]
     wd = cfg["wd"]
+
     div = cfg["div"]
     ens = div ** 2
-    scale_ch = 1 / div ** 0.5
+    scale_ch = 1 / div
 
     ds_root = work_path / "assets/datasets/"
 
@@ -70,8 +67,8 @@ def exp(cfg: dict):
     train_ds = base_train_ds.transform(train_trans).balance_class(seed=0).in_ndata(ndata)
     val_ds = base_val_ds.transform(val_trans)
 
-    train_dl = train_ds.loader(batch_size, shuffle=True)
-    val_dl = val_ds.loader(batch_size, shuffle=False)
+    train_dl = train_ds.loader(batch_size, shuffle=True, num_workers=cfg["num_workers"])
+    val_dl = val_ds.loader(batch_size, shuffle=False, num_workers=cfg["num_workers"])
 
     run_mgr = RunManager(exc_path=this_path, exp_name=exp_name, exp_tpl="exp_tpl_ee")
     run_mgr.log_param("model_arc", f"{net.__name__}")
@@ -101,7 +98,7 @@ def exp(cfg: dict):
     run_mgr.log_param("scale_ch", scale_ch)
     run_mgr.log_text(src_name, src_text)
 
-    network = Network(EERefiner(net(num_classes=num_classes)).cifar_style().multi_narrow(div=div, agg="mean").init_weights().build().to(device))
+    network = Network(EERefiner(net(num_classes=num_classes)).cifar_style().multi_narrow(div=div, agg="mean", flex_ch=True).init_weights().build().to(device))
     if cfg["compile"]:
         network = torch.compile(network, mode="max-autotune")
     criterion = torch.nn.CrossEntropyLoss()
@@ -142,12 +139,13 @@ def exp(cfg: dict):
         # run_mgr.log_metrics(train_aux, step=e + 1)
         # run_mgr.log_metrics(val_aux, step=e + 1)
         # run_mgr.log_metrics(trainer.time_info(), step=e + 1)
-        run_mgr.log_metrics(trainer.time_stats(incl_fmt=False), step=e + 1)
-        # run_mgr.log_metrics(trainer.time_stats_mt(incl_fmt=False), step=e + 1)
+        run_mgr.log_metrics(trainer.time_stats(incl_fmt=True), step=e + 1)
 
+        run_mgr.log_metric("progress", f"{(e + 1) / epochs * 100:.1f}%", step=e + 1)
         trainer.printmet(mets, e + 1, epochs, itv=epochs / 5)
         run_mgr.ref_stats(step=e + 1, itv=epochs/100, last_step=epochs)
-        run_mgr.ref_results(step=e + 1, itv=epochs/100, last_step=epochs)
+        run_mgr.ref_results(step=e + 1, itv=epochs, last_step=epochs) # 競合しないように，書き込みは一回だけ
+        # run_mgr.ref_results(step=e + 1, itv=epochs/100, last_step=epochs)
 
     # run_mgr.log_torch_save(trainer.network.get_sd(), "state_dict.pt")  # get_sdはいまない
 
