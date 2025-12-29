@@ -1,0 +1,455 @@
+EEWrapper(
+  (model): RegNet(
+    (stem): SimpleStemIN(
+      (0): Conv2d(12, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=4, bias=False)
+      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (trunk_output): Sequential(
+      (block1): AnyStage(
+        (block1-0): ResBottleneckBlock(
+          (proj): Conv2dNormActivation(
+            (0): Conv2d(64, 96, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+            (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(64, 96, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=24, bias=False)
+              (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(96, 16, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(16, 96, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(96, 96, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+      )
+      (block2): AnyStage(
+        (block2-0): ResBottleneckBlock(
+          (proj): Conv2dNormActivation(
+            (0): Conv2d(96, 208, kernel_size=(1, 1), stride=(2, 2), groups=4, bias=False)
+            (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(96, 208, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(208, 208, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=52, bias=False)
+              (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(208, 24, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(24, 208, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(208, 208, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block2-1): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(208, 208, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(208, 208, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=52, bias=False)
+              (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(208, 52, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(52, 208, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(208, 208, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block2-2): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(208, 208, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(208, 208, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=52, bias=False)
+              (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(208, 52, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(52, 208, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(208, 208, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(208, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+      )
+      (block3): AnyStage(
+        (block3-0): ResBottleneckBlock(
+          (proj): Conv2dNormActivation(
+            (0): Conv2d(208, 416, kernel_size=(1, 1), stride=(2, 2), groups=4, bias=False)
+            (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(208, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=104, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(416, 52, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(52, 416, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-1): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=104, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(416, 104, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(104, 416, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-2): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=104, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(416, 104, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(104, 416, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-3): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=104, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(416, 104, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(104, 416, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-4): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=104, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(416, 104, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(104, 416, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block3-5): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=104, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(416, 104, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(104, 416, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(416, 416, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(416, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+      )
+      (block4): AnyStage(
+        (block4-0): ResBottleneckBlock(
+          (proj): Conv2dNormActivation(
+            (0): Conv2d(416, 880, kernel_size=(1, 1), stride=(2, 2), groups=4, bias=False)
+            (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          )
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(416, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=220, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(880, 104, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(104, 880, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block4-1): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=220, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(880, 220, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(220, 880, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block4-2): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=220, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(880, 220, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(220, 880, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block4-3): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=220, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(880, 220, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(220, 880, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block4-4): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=220, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(880, 220, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(220, 880, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+        (block4-5): ResBottleneckBlock(
+          (f): BottleneckTransform(
+            (a): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (b): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=220, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (2): ReLU(inplace=True)
+            )
+            (se): SqueezeExcitation(
+              (avgpool): AdaptiveAvgPool2d(output_size=1)
+              (fc1): Conv2d(880, 220, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (fc2): Conv2d(220, 880, kernel_size=(1, 1), stride=(1, 1), groups=4)
+              (activation): ReLU()
+              (scale_activation): Sigmoid()
+            )
+            (c): Conv2dNormActivation(
+              (0): Conv2d(880, 880, kernel_size=(1, 1), stride=(1, 1), groups=4, bias=False)
+              (1): BatchNorm2d(880, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+          )
+          (activation): ReLU(inplace=True)
+        )
+      )
+    )
+    (avgpool): AdaptiveAvgPool2d(output_size=(1, 1))
+    (fc): GroupedLinear(in_features=880, out_features=400, groups=4, bias=True)
+  )
+  (repeater): RepeatData(4)
+  (chunk_merge): ChunkMerge()
+)

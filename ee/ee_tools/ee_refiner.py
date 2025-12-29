@@ -1,7 +1,7 @@
 import math
 import sys
 from pathlib import Path
-from typing import Any, List, Literal, Callable
+from typing import Any, Callable, List, Literal
 
 import torch
 import torch.nn as nn
@@ -9,6 +9,7 @@ from torch import Tensor
 from torch.nn import functional as F
 from torch.nn import init
 from torch.nn.parameter import Parameter, UninitializedParameter
+from torchvision.ops import Conv2dNormActivation
 
 this_path = Path(__file__) if '__file__' in globals() else Path("<unknown>.ipynb").resolve()
 work_path = next((p for p in this_path.parents if p.name == "research"), None)
@@ -16,6 +17,7 @@ tools_path = work_path / Path("../torch-tools")
 sys.path.append(str(tools_path))
 
 from network import Refiner
+
 
 class EERefiner(Refiner):
     def __init__(self, model: nn.Module, _steps: List = None):
@@ -76,20 +78,27 @@ class EERefiner(Refiner):
         return self.ee_convert(ensembles, ch_scale, arch, flex_ch, flex_mode, grouped_linear_impl).ee_wrapper(ensembles, agg)
     
     def ee_convert(self, ensembles: int, ch_scale: int | float, arch, flex_ch: bool, flex_mode: Literal["round", "floor", "ceil"], grouped_linear_impl: Literal["einsum", "conv"]) -> nn.Module:
-        def _ee_convert(model, ensembles=1, ch_scale=1, arch=arch, flex_ch=flex_ch, flex_mode=flex_mode, grouped_linear_impl=grouped_linear_impl):
+
+        def _ee_convert(model, ensembles=ensembles, ch_scale=ch_scale, arch=arch, flex_ch=flex_ch, flex_mode=flex_mode, grouped_linear_impl=grouped_linear_impl):
             if ensembles == 1 and ch_scale == 1:
                 return model
 
             first_layer_processed = False
 
+            # --- アーキテクチャの確定 ---
+            # ポリシー適用前にアーキテクチャを確定させる
+            _arch = arch
+            if _arch == "auto":
+                _arch = self.get_arch()
+
             def align_channels(target_channels: float, divisor: int) -> int:
                 c = round(target_channels)
-                
                 if not flex_ch:
                     return c
-
+                # 制約: チャネル数は必ずdivisorの倍数かつdivisor以上でなければならない
                 if c < divisor:
                     return divisor
+                
                 if flex_mode == 'floor':
                     return (c // divisor) * divisor
                 elif flex_mode == 'ceil':
@@ -101,18 +110,44 @@ class EERefiner(Refiner):
                 else:
                     raise ValueError(f"Invalid flex_mode: {flex_mode}")
 
+            # --- Helper: Layer再構築用 ---
+            def rebuild_conv(module, in_channels=None, out_channels=None, groups=None):
+                return module.__class__(
+                    in_channels=in_channels if in_channels is not None else module.in_channels,
+                    out_channels=out_channels if out_channels is not None else module.out_channels,
+                    kernel_size=module.kernel_size,
+                    stride=module.stride,
+                    padding=module.padding,
+                    dilation=module.dilation,
+                    groups=groups if groups is not None else module.groups,
+                    bias=module.bias is not None,
+                    padding_mode=module.padding_mode,
+                    device=module.weight.device,
+                    dtype=module.weight.dtype,
+                )
+
+            def rebuild_bn(module, num_features):
+                return module.__class__(
+                    num_features=num_features,
+                    eps=module.eps,
+                    momentum=module.momentum,
+                    affine=module.affine,
+                    track_running_stats=module.track_running_stats,
+                    device=module.weight.device if module.affine else None,
+                    dtype=module.weight.dtype if module.affine else None,
+                )
+
+            # --- Policies ---
             def policy_classifier(name, module: nn.Module):
                 target_names = {'fc', 'classifier', 'head'}
 
                 def convert_fc_linear(module):
                     raw_in = module.in_features * ensembles * ch_scale
-                    raw_out = module.out_features * ensembles # ch_scaleなし
-
+                    raw_out = module.out_features * ensembles
                     if grouped_linear_impl == "einsum":
                         GroupedLinearClass = GroupedLinear
                     elif grouped_linear_impl == "conv":
                         GroupedLinearClass = GroupedLinearConv1d
-
                     new_module = GroupedLinearClass(
                         in_features=align_channels(raw_in, divisor=ensembles),
                         out_features=align_channels(raw_out, divisor=ensembles),
@@ -124,22 +159,25 @@ class EERefiner(Refiner):
                     return new_module
                 
                 if name in target_names:
-                    if isinstance(module, nn.Linear): # fc自身がLinear層の場合
+                    if isinstance(module, nn.Linear):
                         return convert_fc_linear(module)
-
                     def policy_fc_linear(sub_name, sub_module):
                         if isinstance(sub_module, nn.Linear):
                             return convert_fc_linear(sub_module)
+                    
+                    # 再帰探索用のポリシーリストを作成
+                    # ここでも _arch に基づいて bottleneck_transform を含めるか決定
+                    sub_policies = [policy_cna, policy_fc_linear, policy_conv, policy_batchnorm, policy_layernorm, policy_linear]
+                    if _arch == "regnet":
+                        sub_policies.insert(0, policy_bottleneck_transform) # 優先度高
 
-                    self.apply_policies(module, [policy_fc_linear, policy_conv, policy_batchnorm, policy_layernorm, policy_linear]) # fcの中も走査が必要
-
-                    return module # 再帰適用後のブロックを返す これがないとfc内に対してもがほかのpolicyを走査してしまう．
+                    self.apply_policies(module, sub_policies)
+                    return module
 
             def policy_conv(name, module: nn.Module):
                 nonlocal first_layer_processed
                 if isinstance(module, (nn.Conv1d, nn.Conv2d, nn.Conv3d)):
                     is_depthwise = module.in_channels == module.out_channels and module.groups == module.in_channels
-
                     if is_depthwise:
                         align_divisor = ensembles
                     else:
@@ -153,50 +191,104 @@ class EERefiner(Refiner):
                     
                     new_in_channels = align_channels(raw_in, divisor=align_divisor)
                     new_groups = new_in_channels if is_depthwise else align_divisor
-
+                    
                     raw_out = module.out_channels * ensembles * ch_scale
                     new_out_channels = align_channels(raw_out, divisor=new_groups)
 
-                    new_module = module.__class__(
-                        in_channels=new_in_channels,
-                        out_channels=new_out_channels,
-                        kernel_size=module.kernel_size,
-                        stride=module.stride,
-                        padding=module.padding,
-                        dilation=module.dilation,
-                        groups=new_groups,
-                        bias=module.bias is not None,
-                        padding_mode=module.padding_mode,
-                        device=module.weight.device,
-                        dtype=module.weight.dtype,
-                    )
-
-                    return new_module
+                    return rebuild_conv(module, in_channels=new_in_channels, out_channels=new_out_channels, groups=new_groups)
 
             def policy_batchnorm(name, module: nn.Module):
                 if isinstance(module, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d)):
                     raw_features = module.num_features * ensembles * ch_scale
-                    new_module = module.__class__(
-                        num_features=align_channels(raw_features, divisor=ensembles),
-                        eps=module.eps,
-                        momentum=module.momentum,
-                        affine=module.affine,
-                        track_running_stats=module.track_running_stats,
-                        device=module.weight.device if module.affine else None,
-                        dtype=module.weight.dtype if module.affine else None,
-                    )
-                    return new_module
+                    new_features = align_channels(raw_features, divisor=ensembles)
+                    return rebuild_bn(module, num_features=new_features)
+
+            def policy_cna(name, module: nn.Module):
+                # Conv2dNormActivation (Conv+BN+Act) ブロックを一括処理
+                if isinstance(module, Conv2dNormActivation):
+                    last_conv_out_channels = None
+                    for i, layer in enumerate(module):
+                        if isinstance(layer, (nn.Conv1d, nn.Conv2d, nn.Conv3d)):
+                            new_conv = policy_conv(f"{name}.{i}", layer)
+                            if new_conv is not None:
+                                module[i] = new_conv
+                                last_conv_out_channels = new_conv.out_channels
+                        elif isinstance(layer, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d)):
+                            if last_conv_out_channels is not None:
+                                new_bn = rebuild_bn(layer, num_features=last_conv_out_channels)
+                                module[i] = new_bn
+                                last_conv_out_channels = None
+                            else:
+                                new_bn = policy_batchnorm(f"{name}.{i}", layer)
+                                if new_bn is not None:
+                                    module[i] = new_bn
+                    return module
+                return None
+
+            def policy_bottleneck_transform(name, module: nn.Module):
+                # RegNetのBottleneckTransform特有の整合性チェック
+                # 構造: [a(1x1), b(3x3 group), (se), c(1x1)]
+                if type(module).__name__ == "BottleneckTransform":
+                    # まず子要素(a, b, c, se)を個別に変換させる
+                    self.apply_policies(module, [policy_cna, policy_conv, policy_batchnorm, policy_layernorm])
+                    
+                    # 変換後の不整合を修正
+                    try:
+                        conv_a = module[0][0]
+                        conv_b = module[1][0]
+                        
+                        # 不整合検知: Aの出力とBの入力が異なる場合
+                        if conv_a.out_channels != conv_b.in_channels:
+                            target_mid = max(conv_a.out_channels, conv_b.in_channels)
+                            
+                            # A (出力) を修正
+                            if conv_a.out_channels != target_mid:
+                                module[0][0] = rebuild_conv(conv_a, out_channels=target_mid)
+                                module[0][1] = rebuild_bn(module[0][1], num_features=target_mid)
+
+                            # B (入力/出力) を修正
+                            if conv_b.in_channels != target_mid:
+                                module[1][0] = rebuild_conv(conv_b, in_channels=target_mid, out_channels=target_mid)
+                                module[1][1] = rebuild_bn(module[1][1], num_features=target_mid)
+
+                            # SE (入力と出力) を修正
+                            if len(module) > 3: # [a, b, se, c]
+                                se_module = module[2]
+                                # SEは通常 AvgPool -> FC1(Conv) -> Act -> FC2(Conv) -> Sigmoid
+                                
+                                # FC1の入力を修正
+                                if hasattr(se_module, 'fc1'):
+                                    se_fc1 = se_module.fc1
+                                    if isinstance(se_fc1, nn.Conv2d):
+                                        if se_fc1.in_channels != target_mid:
+                                            se_module.fc1 = rebuild_conv(se_fc1, in_channels=target_mid)
+
+                                # FC2の出力を修正
+                                if hasattr(se_module, 'fc2'):
+                                    se_fc2 = se_module.fc2
+                                    if isinstance(se_fc2, nn.Conv2d):
+                                        if se_fc2.out_channels != target_mid:
+                                            se_module.fc2 = rebuild_conv(se_fc2, out_channels=target_mid)
+
+                            # C (入力) を修正
+                            conv_c = module[-1][0]
+                            if conv_c.in_channels != target_mid:
+                                module[-1][0] = rebuild_conv(conv_c, in_channels=target_mid)
+                        
+                    except (IndexError, AttributeError):
+                        pass
+
+                    return module
+                return None
 
             def policy_linear(name, module: nn.Module):
                 if isinstance(module, nn.Linear):
                     raw_in = module.in_features * ensembles * ch_scale
                     raw_out = module.out_features * ensembles * ch_scale
-                    
                     if grouped_linear_impl == "einsum":
                         GroupedLinearClass = GroupedLinear
                     elif grouped_linear_impl == "conv":
                         GroupedLinearClass = GroupedLinearConv1d
-
                     new_module = GroupedLinearClass(
                         in_features=align_channels(raw_in, divisor=ensembles),
                         out_features=align_channels(raw_out, divisor=ensembles),
@@ -209,57 +301,56 @@ class EERefiner(Refiner):
 
             def policy_layernorm(name, module: nn.Module) -> nn.Module | None:
                 if isinstance(module, nn.LayerNorm):
-                    if type(module) is nn.LayerNorm: # ケースA: 純粋な nn.LayerNorm ConvNeXtのBlock内など、NHWC (Channel Last) でデータが来る場所
+                    if type(module) is nn.LayerNorm: 
                         TargetNormClass = GroupedLayerNorm
                     else:
-                        TargetNormClass = GroupedLayerNorm2d # ケースB: LayerNorm2d (特定のカスタムクラス) Stem/Downsampleなど、NCHW (Channel First) でデータが来る場所
-
+                        TargetNormClass = GroupedLayerNorm2d
                     if isinstance(module.normalized_shape, (int, float)):
                         old_channels = int(module.normalized_shape)
                     else:
                         old_channels = int(module.normalized_shape[0])
-
                     raw_channels = old_channels * ensembles * ch_scale
                     new_channels = align_channels(raw_channels, divisor=ensembles)
-
                     return TargetNormClass(
                         num_groups=ensembles,
                         num_channels=new_channels,
                         eps=module.eps,
                     )
-
+            
             def policy_layer_scale_param(name, module: nn.Module):
                 target_param_names = ['layer_scale', 'gamma']
-
                 for param_name in target_param_names:
                     if hasattr(module, param_name):
                         param = getattr(module, param_name)
-                        
                         if isinstance(param, nn.Parameter) and param.dim() >= 1:
                             old_channels = param.shape[0]
-                            
                             raw_new = old_channels * ensembles * ch_scale
                             new_channels = align_channels(raw_new, divisor=ensembles)
-
                             if old_channels != new_channels:
                                 with torch.no_grad():
                                     repeat_factor = (new_channels // old_channels) + 1
-                                    repeats = [repeat_factor] + [1] * (param.dim() - 1) # dim=3 (C,1,1), factor=2 の場合 [2, 1, 1]
-                                    
+                                    repeats = [repeat_factor] + [1] * (param.dim() - 1)
                                     new_data = param.data.repeat(*repeats)[:new_channels]
-
                                 setattr(module, param_name, nn.Parameter(new_data))
 
-            self.apply_policies(model, [policy_classifier, policy_conv, policy_batchnorm, policy_layernorm, policy_linear])
+            # --- Execution ---
+            # 基本ポリシー
+            policies = [policy_classifier, policy_cna, policy_conv, policy_batchnorm, policy_layernorm, policy_linear]
+            
+            # RegNetの場合のみ BottleneckTransform 補正を追加 (policy_cnaより優先)
+            if _arch == "regnet":
+                policies.insert(1, policy_bottleneck_transform)
 
-            if arch == "auto":
-                arch = self.get_arch()
-                
-            if arch in ("convnext"):
+            self.apply_policies(model, policies)
+            
+            # ConvNeXt特有の処理
+            if _arch in ("convnext"):
                 self.apply_policies(model, [policy_layer_scale_param])
             
-        return self.pipe(_ee_convert, ensembles=ensembles, ch_scale=ch_scale, arch=arch, flex_ch=flex_ch)
-    
+            return model
+
+        return self.pipe(_ee_convert, ensembles=ensembles, ch_scale=ch_scale, arch=arch, flex_ch=flex_ch, flex_mode=flex_mode, grouped_linear_impl=grouped_linear_impl)
+
     def ee_wrapper(self, ensembles: int, agg: Literal["mean", "sum", "none", "both"]) -> nn.Module:
         return self.pipe(EEWrapper, ensembles=ensembles, agg=agg)
 
