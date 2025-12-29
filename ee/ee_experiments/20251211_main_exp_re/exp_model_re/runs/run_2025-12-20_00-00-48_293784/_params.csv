@@ -1,2 +1,3 @@
-model_arc,train_dataset,val_dataset,num_classes,train_trans,val_trans,train_ndata,val_ndata,epochs,max_lr,wd,batch_size,base_epochs,iters/epoch,iters,processed_ndata,ndata_per_class,div,ensembles,scale_ch,num_params,criterion,optimizer,scheduler
-regnet_y_400mf,cifar100_train,cifar100_val,100,"[ToImage(), RandomCrop(size=(32, 32), padding=[4, 4, 4, 4], pad_if_needed=False, fill=0, padding_mode=constant), RandomHorizontalFlip(p=0.5), ToDtype(scale=True), Normalize(mean=[0.5070751905441284, 0.48654890060424805, 0.44091784954071045], std=[0.26733431220054626, 0.2564384937286377, 0.27615049481391907], inplace=True)]","[ToImage(), ToDtype(scale=True), Normalize(mean=[0.5070751905441284, 0.48654890060424805, 0.44091784954071045], std=[0.26733431220054626, 0.2564384937286377, 0.27615049481391907], inplace=True)]",20000,10000,200,0.005,0.05,128,,157,31400,4000000,200.0,1,1,1.0,3947244,CrossEntropyLoss,AdamW,CosineAnnealingLR
+version https://git-lfs.github.com/spec/v1
+oid sha256:08e9e8387d0b09665d6a450d358506bdfc485a11ad1e72e7d4c3f1dff79c2b7e
+size 930
