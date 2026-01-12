@@ -1,9 +1,13 @@
+from pathlib import Path
 from train import exp
+from pl_utils import filter_finished_tasks
 from gpu_scheduler import parallel_run, generate_tasks_grid
 
 def main():
+    this_path = Path(__file__).resolve()
     cfg = {}
 
+    # cfg["exp_name"] = "exp_tmp"
     cfg["exp_name"] = "exp_model"
     cfg["train_ds_str"] = "cifar100_train"
     cfg["val_ds_str"] = "cifar100_val"
@@ -14,10 +18,9 @@ def main():
     max_lr = [5e-3 * batch_size / 128 for batch_size in batch_size]
     cfg[("model_str", "batch_size", "max_lr")] = list(zip(model_str, batch_size, max_lr))
 
-    cfg["wd"] = [3, 5, 7, 10]
-    # cfg["wd"] = [1e-4, 5e-4, 1e-3, 3e-3, 1e-2, 3e-2, 7e-2, 1e-1, 3e-1, 5e-1, 7e-1, 1]
+    cfg["wd"] = [1e-4, 5e-4, 1e-3, 3e-3, 5e-3, 1e-2, 3e-2, 5e-2, 7e-2, 1e-1, 3e-1, 5e-1, 7e-1, 1, 3, 5, 7, 10, 30, 50]
 
-    ndata = [50000, 10000, 1000, 500, 100]
+    ndata = [50000, 20000, 10000, 5000, 1000, 500, 100]
 
     epochs = [200 if n >= 10000 else 10000 * 200 // n for n in ndata]
     cfg[("ndata", "epochs")] = list(zip(ndata, epochs))
@@ -33,6 +36,16 @@ def main():
     cfg["compile"] = True
     
     tasks = generate_tasks_grid(exp, cfg)
+
+    key_map = {
+        "model_str": "model_arc",    # run内で net.__name__ としてログ保存
+        "ndata": "train_ndata",      # run内で len(train_ds) としてログ保存
+        "div": "div",                # そのままログ保存
+        "epochs": "epochs",          # そのままログ保存（ndataと連動するが念のため）
+        "batch_size": "batch_size"   # そのままログ保存（model_strと連動するが念のため）
+    }
+    tasks = filter_finished_tasks(tasks, parquet_path=f"{this_path.parent}/{cfg['exp_name']}/_results.parquet", key_map=key_map)
+
     parallel_run(tasks, avoid_used=True, gpu_ids=[0,1,2,3,4,5,6,7])
 
 if __name__ == "__main__":

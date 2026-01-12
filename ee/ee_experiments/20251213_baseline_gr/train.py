@@ -68,7 +68,7 @@ def exp(cfg: dict):
     train_dl = train_ds.loader(batch_size, shuffle=True, num_workers=cfg["num_workers"])
     val_dl = val_ds.loader(batch_size, shuffle=False, num_workers=cfg["num_workers"])
 
-    exp = ExpManager(exc_path=this_path, exp_name=exp_name, exp_tpl="exp_tpl_ee")
+    exp = ExpManager(exp_path=this_path.parent / exp_name, exp_tpl="exp_tpl_ee")
     run = exp.create_run()
 
     run.log_param("model_arc", f"{net.__name__}")

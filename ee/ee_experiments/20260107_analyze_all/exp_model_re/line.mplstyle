@@ -1,0 +1,21 @@
+# line.mplstyle
+
+# --- Grid (Enable & Style) ---
+axes.grid: True
+axes.grid.axis: both
+
+# グレー背景，白グリッド
+# axes.facecolor: f2f2f5
+# grid.color: white
+# grid.linestyle: -
+# grid.linewidth: 1.0
+# grid.alpha: 1.0
+
+# シンプルな点線
+grid.linestyle: --
+grid.linewidth: 1.0
+grid.alpha: 0.3
+
+# --- Line Properties ---
+lines.linewidth: 1.5
+lines.solid_capstyle: round
