@@ -2,7 +2,7 @@ __pycache__/
 
 .env*/
 
-/assets/datasets/
+/assets*/
 /mlruns/
 
 *.pt
