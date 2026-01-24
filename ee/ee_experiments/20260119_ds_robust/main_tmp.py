@@ -9,34 +9,32 @@ def main():
 
     cfg["exp_name"] = "exp_robust"
     
-    train_ds_str = ["cifar10_train"]
-    val_ds_str = ["cifar10_val"]
+    cfg["model_str"] = "resnet18"
     
-    cfg[("train_ds_str", "val_ds_str")] = list(zip(train_ds_str, val_ds_str))
+    train_ds_str = ["cub200_train"]
+    val_ds_str = ["cub200_val"]
+    batch_size = [32]
+    max_lr = [5e-3 * batch_size / 128 for batch_size in batch_size]
+    
+    cfg[("train_ds_str", "val_ds_str", "batch_size", "max_lr")] = list(zip(train_ds_str, val_ds_str, batch_size, max_lr))
 
     cfg["optim_str"] = "adamw"
 
-    model_str = ["resnet18"] * len(train_ds_str)
-    batch_size = [128] * len(train_ds_str)
-    max_lr = [5e-3 * batch_size / 128 for batch_size in batch_size]
-    cfg[("model_str", "batch_size", "max_lr")] = list(zip(model_str, batch_size, max_lr))
-
     cfg["wd"] = 5e-2
-
-    cfg["ipc"] = ["all", "max", 5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 1]
+    cfg["ipc"] = ["all"]
 
     # ndata = [50000, 20000, 10000, 5000, 2000, 1000, 500, 100]
     # epochs = [200 if n >= 10000 else 10000 * 200 // n for n in (ipc * 100)]
     # cfg[("ipc", "epochs")] = list(zip(ipc, epochs))
 
-    cfg["div"] = [1, 2, 4, 8, 16, 32]
+    cfg["div"] = [16, 32]
 
     cfg["flex_ch"] = True
     
     cfg["num_threads"] = 4
     cfg["num_interop_threads"] = 4
     cfg["num_workers"] = 2
-    cfg["compile"] = True
+    cfg["compile"] = False 
     
 
     tasks = generate_tasks_grid(run, cfg)
