@@ -1,0 +1,75 @@
+[project]
+name = "python-template"
+version = "0.1.0"
+description = "A modern Python research/development template with uv and Ruff"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+
+# Ruff
+[tool.ruff]
+line-length = 100
+indent-width = 4
+exclude = [
+    ".bzr", ".direnv", ".eggs", ".git", ".git-rewrite", ".hg",
+    ".mypy_cache", ".nox", ".pants.d", ".pytype", ".ruff_cache",
+    ".svn", ".tox", ".venv", "__pypackages__", "_build",
+    "buck-out", "build", "dist", "node_modules", "venv",
+]
+
+[tool.ruff.lint]
+select = [
+    # Tier 1
+    "F",        # Pyflakes: 未定義の変数や未使用のインポートなど、実行前に検出可能な論理的バグ
+    "E",        # pycodestyle Error: PEP 8に準拠した構文エラーや明白なスタイル違反
+    "B",        # flake8-bugbear: 構文的には有効でも、潜在的な落とし穴になりやすいコードパターンの検出
+
+    # Tier 2
+    "I",        # isort: インポート順序の標準化やグループ化による自動整理
+    "UP",       # pyupgrade: 古いPythonバージョンの構文を、よりモダンな構文へ自動アップグレード
+    "W",        # pycodestyle Warning: インデントや空白の連続など、PEP 8に準拠したスタイル警告
+    "SIM",      # flake8-simplify: 冗長なコードの検出と、より簡潔で可読性の高い記述へのリファクタリング提案
+    "RUF",      # Ruff-specific rules: Ruff独自の静的解析ルールによる、他のLinterではカバーされない特有のバグ検出
+
+    # Tier 3
+    "C4",       # flake8-comprehensions: 不要な dict() や list() 呼び出しを内包表記に書き換え、パフォーマンスを最適化
+    "DTZ",      # flake8-datetimez: タイムゾーン情報を持たない（naiveな）datetimeの生成を禁止し、日時計算のバグを防止
+    "PTH",      # flake8-use-pathlib: 従来の os.path ではなく、オブジェクト指向の pathlib モジュールの使用を強制
+    "BLE",      # flake8-blind-except: `except Exception:` のような範囲の広すぎる例外捕捉を禁止し、エラーの隠蔽を防止
+    "RET",      # flake8-return: return文の前に不要な変数代入を避けるなど、戻り値の処理を論理的に整理
+    "N",        # pep8-naming: クラス名（CamelCase）や関数名（snake_case）など、PEP 8の命名規則を厳格化
+    "ARG",      # flake8-unused-arguments: 未使用の関数・メソッド引数を検出し、API設計のミスやロジックの欠落を警告
+    # "PT",       # flake8-pytest-style: pytestのフィクスチャやパラメータ化の記述スタイルを統一（テストが存在する場合）
+]
+
+ignore = [
+    # "F401",    # module imported but unused (未使用のインポート)
+    # "F841",    # unused variable (未使用の変数)
+    # --- フォーマッタとの競合を回避するための設定 ---
+    "W191",    # indentation-contains-tabs (タブインデントの使用)
+    "E111",    # indentation-with-invalid-multiple (不規則なインデント幅)
+    "E114",    # indentation-with-invalid-multiple-comment (コメントの不規則なインデント)
+    "E117",    # over-indented (過剰なインデント)
+    "D206",    # indent-with-space (Docstringのスペースインデント)
+    "D300",    # triple-single-quotes (Docstringのシングルクォート使用)
+    "Q000",    # bad-quotes-inline-string (インライン文字列のクォート違反)
+    "Q001",    # bad-quotes-multiline-string (複数行文字列のクォート違反)
+    "Q002",    # bad-quotes-docstring (Docstringのクォート違反)
+    "Q003",    # avoidable-escaped-quote (回避可能なエスケープクォート)
+    "COM812",  # missing-trailing-comma (末尾のカンマ欠如)
+    "COM819",  # prohibited-trailing-comma (末尾のカンマ禁止)
+    "ISC001",  # single-line-implicit-string-concatenation (暗黙的な文字列結合)
+]
+
+fixable = ["ALL"]
+unfixable = ["F401"]
+# F401（未使用のインポート）の警告は出すが、自動修正による意図しない削除を禁止する
+
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$" # 使用しない変数には「_」をプレフィックスとして付けることで許容する
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = true
+line-ending = "auto"
